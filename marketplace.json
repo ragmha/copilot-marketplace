@@ -1,0 +1,74 @@
+{
+  "name": "MCAPS Marketplace",
+  "owner": {
+    "name": "MCAPS Engineering",
+    "email": "mcaps-marketplace@example.com"
+  },
+  "metadata": {
+    "description": "Internal Copilot plugins for customer-ready workflows.",
+    "version": "1.0.0",
+    "repository": "https://github.com/mcaps/copilot-marketplace"
+  },
+  "plugins": [
+    {
+      "name": "QBR Storyteller",
+      "description": "Turn account signals, wins, and risks into a crisp QBR narrative and meeting brief.",
+      "version": "1.4.0",
+      "category": "Customer moments",
+      "author": "Field Excellence",
+      "icon": "↗",
+      "featured": true,
+      "repository": "https://github.com/mcaps/qbr-storyteller"
+    },
+    {
+      "name": "Account Researcher",
+      "description": "Create an executive account snapshot from public signals, relationship context, and whitespace.",
+      "version": "2.1.0",
+      "category": "Account intelligence",
+      "author": "MCAPS Insights",
+      "icon": "◎",
+      "featured": true,
+      "repository": "https://github.com/mcaps/account-researcher"
+    },
+    {
+      "name": "Pipeline Coach",
+      "description": "Review an opportunity, identify next actions, and generate a mutual action plan.",
+      "version": "1.2.3",
+      "category": "Pipeline",
+      "author": "Revenue Programs",
+      "icon": "⌁",
+      "featured": true,
+      "repository": "https://github.com/mcaps/pipeline-coach"
+    },
+    {
+      "name": "Meeting Brief",
+      "description": "Prepare a customer meeting brief with objectives, stakeholders, and suggested questions.",
+      "version": "1.0.2",
+      "category": "Customer moments",
+      "author": "Field Excellence",
+      "icon": "▤",
+      "featured": false,
+      "repository": "https://github.com/mcaps/meeting-brief"
+    },
+    {
+      "name": "Competitive Compass",
+      "description": "Structure competitive observations into differentiators, proof points, and talk tracks.",
+      "version": "0.9.0",
+      "category": "Account intelligence",
+      "author": "Industry Solutions",
+      "icon": "✦",
+      "featured": false,
+      "repository": "https://github.com/mcaps/competitive-compass"
+    },
+    {
+      "name": "Forecast Focus",
+      "description": "Surface forecast risks and produce a concise inspection checklist for pipeline reviews.",
+      "version": "1.1.0",
+      "category": "Pipeline",
+      "author": "Revenue Programs",
+      "icon": "◒",
+      "featured": false,
+      "repository": "https://github.com/mcaps/forecast-focus"
+    }
+  ]
+}
