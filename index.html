@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MCAPS Marketplace for ready-made GitHub Copilot workflows." />
+    <title>MCAPS Marketplace</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="MCAPS Marketplace home">
+        <span class="brand-mark">M</span>
+        <span>MCAPS <strong>Marketplace</strong></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#catalog">Catalog</a>
+        <a href="#learning">Learning hub</a>
+        <a href="#contribute">Contribute</a>
+      </nav>
+      <a class="header-link" href="#install">Get started <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="top">
+      <section class="hero page-width" aria-labelledby="hero-title">
+        <p class="eyebrow">Internal Copilot plugin marketplace</p>
+        <h1 id="hero-title">Install ready-made workflows for QBRs, account research, pipeline, and more <span class="muted-dash">—</span> or browse what your colleagues have built and build on it.</h1>
+        <div class="hero-actions">
+          <a class="action-card" href="#catalog"><span>Browse the catalog</span><span class="arrow">→</span></a>
+          <a class="action-card" href="#learning"><span><span class="action-icon">♧</span> Learning hub</span></a>
+          <a class="action-card" href="#contribute"><span><span class="action-icon">＋</span> Contribute</span></a>
+        </div>
+        <div class="install-group" id="install">
+          <div class="install-main">
+            <span class="plus">＋</span>
+            <button id="app-install" type="button">Add marketplace to GitHub Copilot app</button>
+            <button id="install-toggle" class="chevron" type="button" aria-label="Show installation options" aria-expanded="false">⌄</button>
+          </div>
+          <div id="install-menu" class="install-menu" hidden>
+            <button type="button" data-copy="app">Copy Copilot app marketplace settings</button>
+            <button type="button" data-copy="cloud">Copy cloud agent settings</button>
+          </div>
+          <button class="cli-copy" id="cli-copy" type="button">Copy Copilot CLI command <span>⧉</span></button>
+          <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="featured page-width" aria-labelledby="featured-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Handpicked for your next customer moment</p>
+            <h2 id="featured-title">Featured now</h2>
+          </div>
+          <a class="text-link" href="#catalog">View all plugins <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="featured-grid" id="featured-grid">
+          <div class="loading-card">Loading the latest plugins…</div>
+        </div>
+      </section>
+
+      <section class="catalog page-width" id="catalog" aria-labelledby="catalog-title">
+        <div class="section-heading catalog-heading">
+          <div>
+            <p class="eyebrow">Explore the collection</p>
+            <h2 id="catalog-title">All plugins</h2>
+          </div>
+          <label class="search">
+            <span class="sr-only">Search plugins</span>
+            <span aria-hidden="true">⌕</span>
+            <input id="search" type="search" placeholder="Search workflows" autocomplete="off" />
+          </label>
+        </div>
+        <div class="catalog-toolbar">
+          <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+          <span class="result-count" id="result-count"></span>
+        </div>
+        <div class="plugin-grid" id="plugin-grid"></div>
+        <p class="empty-state" id="empty-state" hidden>No plugins match that search. Try a different term or category.</p>
+        <p class="error-state" id="error-state" hidden>We couldn't load the catalog. Check that <code>marketplace.json</code> is available and refresh.</p>
+      </section>
+
+      <section class="learning page-width" id="learning" aria-labelledby="learning-title">
+        <div>
+          <p class="eyebrow">Learn, share, improve</p>
+          <h2 id="learning-title">Make the most of every plugin.</h2>
+        </div>
+        <p>Start with a ready-made workflow, learn how plugin manifests work, then contribute your own reusable expertise for the team.</p>
+        <a class="dark-button" href="https://docs.github.com/en/copilot/concepts/agents/about-plugins" target="_blank" rel="noreferrer">Read the plugin guide <span>↗</span></a>
+      </section>
+
+      <section class="contribute page-width" id="contribute" aria-labelledby="contribute-title">
+        <div class="contribute-copy">
+          <p class="eyebrow">Build with your colleagues</p>
+          <h2 id="contribute-title">Have a workflow that saves the team time?</h2>
+          <p>Package it as a Copilot plugin, add it to the catalog, and help the next account team start from a stronger place.</p>
+          <a class="outline-button" href="https://github.com" target="_blank" rel="noreferrer">Open contribution guide <span>↗</span></a>
+        </div>
+        <div class="contribute-mark" aria-hidden="true">＋</div>
+      </section>
+    </main>
+
+    <footer class="site-footer page-width">
+      <span>MCAPS Marketplace</span>
+      <span>Internal use · Powered by GitHub Copilot plugins</span>
+    </footer>
+    <script src="app.js" defer></script>
+  </body>
+</html>
