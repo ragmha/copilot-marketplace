@@ -221,6 +221,8 @@ export type InstallGuide = {
   id: string;
   label: string;
   summary: string;
+  /** The one snippet worth copying for this client. Absent when the client has no single command. */
+  primary?: { code: string; label: string };
   steps: InstallStep[];
 };
 
@@ -237,6 +239,7 @@ export function installGuidesFor(plugin: string): InstallGuide[] {
       id: "vscode",
       label: "VS Code",
       summary: "Plugin support is behind a setting, then plugins install from the Chat view.",
+      primary: { code: projectSettings, label: ".github/copilot/settings.json" },
       steps: [
         {
           text: "Turn on plugin support in your user settings.json.",
@@ -257,6 +260,7 @@ export function installGuidesFor(plugin: string): InstallGuide[] {
       id: "cli",
       label: "Copilot CLI",
       summary: "Register the marketplace once, then install this plugin by name.",
+      primary: { code: `copilot plugin install ${qualified}`, label: "Terminal" },
       steps: [
         { text: "Add the marketplace.", code: cliCommand },
         { text: `Install ${plugin}.`, code: `copilot plugin install ${qualified}` },
@@ -271,6 +275,7 @@ export function installGuidesFor(plugin: string): InstallGuide[] {
       id: "app",
       label: "Copilot App",
       summary: "Browse and install from the app, or commit the settings for everyone.",
+      primary: { code: appSettings, label: "Copilot app settings" },
       steps: [
         { text: "Click Customize, then Plugins." },
         {
@@ -286,6 +291,7 @@ export function installGuidesFor(plugin: string): InstallGuide[] {
       id: "cloud",
       label: "Copilot Cloud Agent",
       summary: "Configuration only — the cloud agent installs plugins declaratively.",
+      primary: { code: projectSettings, label: ".github/copilot/settings.json" },
       steps: [
         {
           text: "Commit .github/copilot/settings.json to the repository the agent works in.",
