@@ -1,0 +1,88 @@
+---
+import { appSettings, cliCommand, cloudSettings } from "../lib/marketplace";
+
+interface Props {
+  count: number;
+}
+
+const { count } = Astro.props;
+
+const alternates = [
+  { key: "app", label: "Copilot app settings" },
+  { key: "cloud", label: "Cloud agent settings" },
+];
+---
+
+<section id="top" class="mx-auto w-full max-w-4xl px-6 pt-24 pb-16 text-center">
+  <h1 class="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
+    The internal Copilot plugin directory
+  </h1>
+
+  <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground text-balance">
+    Plugins are reusable capabilities for Copilot. Add the marketplace once, then
+    install any of the {count} plugins your colleagues have published.
+  </p>
+
+  <div id="quickstart" class="mx-auto mt-10 max-w-2xl scroll-mt-24 text-left">
+    <button
+      type="button"
+      data-copy="cli"
+      class="group flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-4 text-left transition-colors hover:bg-accent"
+    >
+      <span class="select-none text-muted-foreground" aria-hidden="true">$</span>
+      <code class="min-w-0 flex-1 truncate text-sm text-card-foreground">{cliCommand}</code>
+      <span
+        class="shrink-0 text-xs text-muted-foreground transition-colors group-hover:text-foreground"
+        >copy</span
+      >
+    </button>
+
+    <div class="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
+      {
+        alternates.map((alternate) => (
+          <button
+            type="button"
+            data-copy={alternate.key}
+            class="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          >
+            {alternate.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <p
+      id="copy-status"
+      role="status"
+      aria-live="polite"
+      class="mt-3 min-h-4 text-center text-xs text-primary"
+    >
+    </p>
+  </div>
+</section>
+
+<script
+  is:inline
+  define:vars={{ snippets: { app: appSettings, cloud: cloudSettings, cli: cliCommand } }}
+>
+  const labels = {
+    app: "Copilot app settings",
+    cloud: "Cloud agent settings",
+    cli: "Install command",
+  };
+  const status = document.getElementById("copy-status");
+
+  document.querySelectorAll("[data-copy]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const key = button.getAttribute("data-copy");
+      const text = snippets[key];
+      if (!status || !text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        status.textContent = `${labels[key]} copied.`;
+      } catch {
+        status.textContent = `Copy failed. Use this value manually: ${text}`;
+      }
+    });
+  });
+</script>

@@ -1,0 +1,46 @@
+---
+import PluginAnatomy from "./PluginAnatomy";
+
+const legend = [
+  { label: "Required", tone: "accent" },
+  { label: "Common capability", tone: "default" },
+  { label: "Optional extras", tone: "muted" },
+];
+---
+
+<section id="anatomy" class="mx-auto w-full max-w-6xl scroll-mt-16 px-6 pb-20">
+  <h2 class="text-xl font-bold tracking-tight">What is a plugin?</h2>
+  <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+    One installable directory that packages reusable agent capabilities. A marketplace
+    catalogs versioned plugins; installing one loads its components into whichever Copilot
+    client you use.
+  </p>
+
+  <div
+    class="mt-6 overflow-hidden rounded-lg border border-border bg-background"
+    role="img"
+    aria-label="Diagram: a marketplace catalog lists versioned plugins. Installing one brings in a plugin directory that ships as a unit — a required plugin.json manifest plus skills, agents, commands, and MCP configuration, with optional hooks, LSP config, Copilot-specific extensions, and scripts. The manifest loads those components into the Copilot CLI, the Copilot app, VS Code, and the Copilot cloud agent."
+  >
+    <PluginAnatomy client:visible />
+  </div>
+
+  <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-muted-foreground">
+    {
+      legend.map((entry) => (
+        <span class="flex items-center gap-2">
+          <span
+            class:list={[
+              "size-2.5 rounded-sm border",
+              entry.tone === "accent" && "border-primary/40 bg-primary/20",
+              entry.tone === "default" && "border-border bg-card",
+              entry.tone === "muted" && "border-dashed border-border bg-background",
+            ]}
+            aria-hidden="true"
+          />
+          {entry.label}
+        </span>
+      ))
+    }
+    <span class="ml-auto">Plugin content lives in the plugin's own repository</span>
+  </div>
+</section>

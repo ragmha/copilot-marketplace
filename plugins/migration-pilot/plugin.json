@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "migration-pilot",
+  "description": "Plan and stage a dependency or framework upgrade with a reversible, reviewable change sequence.",
+  "version": "1.1.0",
+  "author": {
+    "name": "Platform Engineering"
+  },
+  "repository": "https://github.com/your-org/migration-pilot",
+  "category": "Delivery",
+  "directory": {
+    "type": "plugin",
+    "updated": "2026-08-11",
+    "contains": {
+      "skills": 2,
+      "agents": 1
+    }
+  }
+}

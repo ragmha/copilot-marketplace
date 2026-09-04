@@ -1,0 +1,75 @@
+---
+import {
+  describeContents,
+  describeUpdated,
+  installCommand,
+  pluginArt,
+  pluginHref,
+  typeChip,
+  type Plugin,
+} from "../lib/marketplace";
+
+interface Props {
+  plugin: Plugin;
+}
+
+const { plugin } = Astro.props;
+const art = pluginArt(plugin.name);
+const contents = describeContents(plugin.contains);
+---
+
+<article
+  class="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground transition-colors hover:border-foreground/25"
+>
+  <div class="relative h-36 overflow-hidden" style={`background:${art.gradient}`}>
+    <span
+      class="absolute inset-0 grid place-items-center text-5xl font-bold tracking-tight text-background/85 select-none"
+      aria-hidden="true"
+    >
+      {art.monogram}
+    </span>
+    <span
+      class="absolute top-3 right-3 rounded-full bg-background/85 px-2.5 py-1 text-[11px] text-foreground"
+    >
+      {typeChip[plugin.type]}
+    </span>
+  </div>
+
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="text-base font-bold tracking-tight">
+      <a href={pluginHref(plugin.name)} class="after:absolute after:inset-0">
+        {plugin.name}
+      </a>
+    </h3>
+
+    <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+      {plugin.description}
+    </p>
+
+    {
+      contents.length > 0 && (
+        <div class="mt-4 flex flex-wrap gap-1.5">
+          {contents.map((entry) => (
+            <span class="rounded border border-border px-1.5 py-0.5 text-[11px] text-muted-foreground">
+              {entry}
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    <div
+      class="mt-auto flex items-center justify-between gap-3 pt-5 text-xs text-muted-foreground"
+    >
+      <button
+        type="button"
+        data-install={installCommand(plugin.name)}
+        class="relative z-10 -m-1 flex items-center gap-1.5 p-1 transition-colors hover:text-foreground"
+      >
+        <span aria-hidden="true">+</span>
+        Install
+      </button>
+      <span title={plugin.updated}>{describeUpdated(plugin.updated)}</span>
+    </div>
+  </div>
+</article>

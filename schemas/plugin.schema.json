@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/your-org/copilot-marketplace/schemas/plugin.schema.json",
+  "title": "Copilot plugin manifest (plugin.json)",
+  "description": "Registry record for one plugin in this marketplace. The official fields are grounded on https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference; `directory` is a local extension that Copilot clients ignore.",
+  "type": "object",
+  "required": ["name", "description", "version", "author", "repository", "category"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": {
+      "type": "string",
+      "description": "Kebab-case plugin name. Must match the directory name under plugins/.",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "description": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "version": {
+      "type": "string",
+      "description": "Semantic version.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z-.]+)?(?:\\+[0-9A-Za-z-.]+)?$"
+    },
+    "author": { "$ref": "#/$defs/author" },
+    "homepage": { "type": "string", "format": "uri" },
+    "repository": {
+      "type": "string",
+      "description": "Source repository. Plugin content lives here, not in this marketplace.",
+      "format": "uri"
+    },
+    "license": { "type": "string" },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "category": { "type": "string", "minLength": 1 },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "directory": { "$ref": "#/$defs/directory" }
+  },
+  "$defs": {
+    "author": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "email": { "type": "string", "format": "email" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "directory": {
+      "type": "object",
+      "description": "Local extension consumed by the directory site. Not part of the official plugin reference.",
+      "required": ["type", "updated"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Which tab the entry appears under.",
+          "enum": [
+            "plugin",
+            "skill",
+            "agent",
+            "prompt",
+            "hook",
+            "mcp-server",
+            "extension"
+          ]
+        },
+        "featured": { "type": "boolean" },
+        "updated": {
+          "type": "string",
+          "description": "ISO date (YYYY-MM-DD) of the last meaningful change.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "contains": {
+          "type": "object",
+          "description": "What the plugin bundles, shown as composition chips.",
+          "additionalProperties": false,
+          "properties": {
+            "skills": { "type": "integer", "minimum": 1 },
+            "agents": { "type": "integer", "minimum": 1 },
+            "hooks": { "type": "integer", "minimum": 1 },
+            "mcpServers": { "type": "integer", "minimum": 1 }
+          }
+        }
+      }
+    }
+  }
+}

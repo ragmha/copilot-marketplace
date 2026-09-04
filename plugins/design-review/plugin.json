@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "design-review",
+  "description": "Prompt that interrogates a technical design for failure modes, cost, and operational burden.",
+  "version": "1.1.0",
+  "author": {
+    "name": "Platform Engineering"
+  },
+  "repository": "https://github.com/your-org/design-review",
+  "category": "Code quality",
+  "directory": {
+    "type": "prompt",
+    "updated": "2026-08-21"
+  }
+}

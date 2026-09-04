@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "conventional-commits",
+  "description": "Block a commit whose message does not follow the repository's conventional commit format.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Developer Experience"
+  },
+  "repository": "https://github.com/your-org/conventional-commits-hook",
+  "category": "Code quality",
+  "directory": {
+    "type": "hook",
+    "updated": "2026-07-15"
+  }
+}
