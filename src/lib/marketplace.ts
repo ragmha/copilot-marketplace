@@ -197,18 +197,19 @@ export const appSettings = JSON.stringify(
   2,
 );
 
-const projectSettings = JSON.stringify(
-  {
-    extraKnownMarketplaces: {
-      [marketplaceKey]: { source: { source: "github", repo: marketplaceRepo } },
+const projectSettingsFor = (plugin: string) =>
+  JSON.stringify(
+    {
+      extraKnownMarketplaces: {
+        [marketplaceKey]: { source: { source: "github", repo: marketplaceRepo } },
+      },
+      enabledPlugins: { [`${plugin}@${marketplaceKey}`]: true },
     },
-    enabledPlugins: { [`${samplePlugin}@${marketplaceKey}`]: true },
-  },
-  null,
-  2,
-);
+    null,
+    2,
+  );
 
-export const cloudSettings = projectSettings;
+export const cloudSettings = projectSettingsFor(samplePlugin);
 
 /** The CLI one-liner that installs a specific plugin from this marketplace. */
 export function installCommand(name: string): string {
@@ -223,98 +224,103 @@ export type InstallGuide = {
   steps: InstallStep[];
 };
 
-export const installGuides: InstallGuide[] = [
-  {
-    id: "vscode",
-    label: "VS Code",
-    summary: "Plugin support is behind a setting, then plugins install from the Chat view.",
-    steps: [
-      {
-        text: "Turn on plugin support in your user settings.json.",
-        code: JSON.stringify({ "chat.plugins.enabled": true }, null, 2),
-      },
-      {
-        text: `Register this marketplace in the repository's .github/copilot/settings.json and commit it, so the whole team gets the same plugins.`,
-        code: projectSettings,
-      },
-      {
-        text: "Open the Chat view, select the cog, then Agent Customizations, then Plugins to browse and install.",
-        caption:
-          "Installed plugins appear under Agent Plugins - Installed in the Extensions view.",
-      },
-    ],
-  },
-  {
-    id: "cli",
-    label: "Copilot CLI",
-    summary: "Register the marketplace once, then install plugins by name.",
-    steps: [
-      { text: "Add the marketplace.", code: cliCommand },
-      {
-        text: "See what it offers.",
-        code: `copilot plugin marketplace browse ${marketplaceKey}`,
-      },
-      {
-        text: "Install a plugin.",
-        code: `copilot plugin install ${samplePlugin}@${marketplaceKey}`,
-        caption: `Inside an interactive session, use /plugin install ${samplePlugin}@${marketplaceKey}.`,
-      },
-      { text: "Confirm what is installed.", code: "copilot plugin list" },
-    ],
-  },
-  {
-    id: "app",
-    label: "Copilot App",
-    summary: "Browse and install from the app, or commit the settings for everyone.",
-    steps: [
-      { text: "Click Customize, then Plugins." },
-      {
-        text: `Add this marketplace by its repository, ${marketplaceRepo}, then install any plugin from the list.`,
-      },
-      {
-        text: "To skip the UI, add the marketplace to your settings instead.",
-        code: appSettings,
-      },
-    ],
-  },
-  {
-    id: "cloud",
-    label: "Copilot Cloud Agent",
-    summary: "Configuration only — the cloud agent installs plugins declaratively.",
-    steps: [
-      {
-        text: "Commit .github/copilot/settings.json to the repository the agent works in.",
-        code: projectSettings,
-      },
-      {
-        text: "The agent picks the plugins up on its next run. There is nothing to install by hand.",
-        caption:
-          "Enterprise administrators can push marketplaces and plugins to everyone through enterprise-managed plugin standards.",
-      },
-    ],
-  },
-  {
-    id: "m365",
-    label: "M365 Copilot",
-    summary:
-      "A different packaging model: Microsoft 365 uses agents uploaded as a ZIP, not GitHub plugins.",
-    steps: [
-      {
-        text: "Export the agent as a ZIP. In Copilot Studio, open Agents, pick your agent, then Channels, then Teams and Microsoft Copilot, then Availability options, then Download .zip.",
-        caption:
-          "The ZIP carries the manifest, configuration, icons, branding, and any embedded knowledge files.",
-      },
-      {
-        text: "Open the Microsoft 365 admin center, then Agents, then Upload custom agent.",
-        code: "https://admin.microsoft.com/",
-      },
-      { text: "Choose the ZIP file and let it validate." },
-      { text: "Verify the agent's name, icon, and host products, then continue." },
-      {
-        text: "Assign users, then continue.",
-        caption: "Start with Just me or one test group before opening it up.",
-      },
-      { text: "Review the agent's permissions and capabilities, then Finish deployment." },
-    ],
-  },
-];
+/**
+ * Install steps for one specific plugin. Every snippet names the plugin, so the
+ * guide is only ever rendered on a plugin's own page.
+ */
+export function installGuidesFor(plugin: string): InstallGuide[] {
+  const projectSettings = projectSettingsFor(plugin);
+  const qualified = `${plugin}@${marketplaceKey}`;
+
+  return [
+    {
+      id: "vscode",
+      label: "VS Code",
+      summary: "Plugin support is behind a setting, then plugins install from the Chat view.",
+      steps: [
+        {
+          text: "Turn on plugin support in your user settings.json.",
+          code: JSON.stringify({ "chat.plugins.enabled": true }, null, 2),
+        },
+        {
+          text: `Add the marketplace and enable ${plugin} in the repository's .github/copilot/settings.json, then commit it so the whole team gets it.`,
+          code: projectSettings,
+        },
+        {
+          text: "Open the Chat view, select the cog, then Agent Customizations, then Plugins to browse and install.",
+          caption:
+            "Installed plugins appear under Agent Plugins - Installed in the Extensions view.",
+        },
+      ],
+    },
+    {
+      id: "cli",
+      label: "Copilot CLI",
+      summary: "Register the marketplace once, then install this plugin by name.",
+      steps: [
+        { text: "Add the marketplace.", code: cliCommand },
+        { text: `Install ${plugin}.`, code: `copilot plugin install ${qualified}` },
+        {
+          text: "Confirm it is installed.",
+          code: "copilot plugin list",
+          caption: `Inside an interactive session, use /plugin install ${qualified}.`,
+        },
+      ],
+    },
+    {
+      id: "app",
+      label: "Copilot App",
+      summary: "Browse and install from the app, or commit the settings for everyone.",
+      steps: [
+        { text: "Click Customize, then Plugins." },
+        {
+          text: `Add this marketplace by its repository, ${marketplaceRepo}, then install ${plugin} from the list.`,
+        },
+        {
+          text: "To skip the UI, add the marketplace to your settings instead.",
+          code: appSettings,
+        },
+      ],
+    },
+    {
+      id: "cloud",
+      label: "Copilot Cloud Agent",
+      summary: "Configuration only — the cloud agent installs plugins declaratively.",
+      steps: [
+        {
+          text: "Commit .github/copilot/settings.json to the repository the agent works in.",
+          code: projectSettings,
+        },
+        {
+          text: `The agent picks ${plugin} up on its next run. There is nothing to install by hand.`,
+          caption:
+            "Enterprise administrators can push marketplaces and plugins to everyone through enterprise-managed plugin standards.",
+        },
+      ],
+    },
+    {
+      id: "m365",
+      label: "M365 Copilot",
+      summary:
+        "A different packaging model: Microsoft 365 uses agents uploaded as a ZIP, not GitHub plugins.",
+      steps: [
+        {
+          text: "Export the agent as a ZIP. In Copilot Studio, open Agents, pick your agent, then Channels, then Teams and Microsoft Copilot, then Availability options, then Download .zip.",
+          caption:
+            "The ZIP carries the manifest, configuration, icons, branding, and any embedded knowledge files.",
+        },
+        {
+          text: "Open the Microsoft 365 admin center, then Agents, then Upload custom agent.",
+          code: "https://admin.microsoft.com/",
+        },
+        { text: "Choose the ZIP file and let it validate." },
+        { text: "Verify the agent's name, icon, and host products, then continue." },
+        {
+          text: "Assign users, then continue.",
+          caption: "Start with Just me or one test group before opening it up.",
+        },
+        { text: "Review the agent's permissions and capabilities, then Finish deployment." },
+      ],
+    },
+  ];
+}

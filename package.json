@@ -9,10 +9,10 @@
   },
   "scripts": {
     "preinstall": "node scripts/only-bun.mjs",
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "check": "astro check",
+    "dev": "bun --bun astro dev",
+    "build": "bun --bun astro build",
+    "preview": "bun --bun astro preview",
+    "check": "bun --bun astro check",
     "validate": "bun scripts/validate.mjs",
     "marketplace": "bun scripts/generate-marketplace.mjs",
     "marketplace:check": "bun scripts/generate-marketplace.mjs --check"
@@ -32,6 +32,13 @@
     "@types/react-dom": "^19.2.5",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite": "^6.4.3"
+  },
+  "overrides": {
+    "vite": "^6.4.3"
+  },
+  "resolutions": {
+    "vite": "^6.4.3"
   }
 }
