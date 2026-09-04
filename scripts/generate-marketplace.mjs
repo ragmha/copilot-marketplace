@@ -19,8 +19,11 @@ function main() {
   const generated = serialize(buildMarketplace(loadExistingMarketplace()));
 
   if (process.argv.includes("--check")) {
+    // Compare newline-agnostically so a CRLF checkout is not a false failure.
+    const normalize = (text) => text.replaceAll("\r\n", "\n");
     const stale = targets.filter(
-      (target) => !existsSync(target) || readFileSync(target, "utf8") !== generated,
+      (target) =>
+        !existsSync(target) || normalize(readFileSync(target, "utf8")) !== normalize(generated),
     );
 
     if (stale.length > 0) {
