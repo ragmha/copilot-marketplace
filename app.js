@@ -1,8 +1,8 @@
 const state = { plugins: [], category: "All", query: "" };
-const cliCommand = "copilot plugin marketplace add https://github.com/mcaps/copilot-marketplace";
+const cliCommand = "copilot plugin marketplace add https://github.com/your-org/copilot-marketplace";
 const settings = {
-  app: JSON.stringify({ extraKnownMarketplaces: { mcaps: { source: { source: "github", repo: "mcaps/copilot-marketplace" } } } }, null, 2),
-  cloud: JSON.stringify({ enabledPlugins: ["qbr-workflow@mcaps", "account-research@mcaps"], extraKnownMarketplaces: ["mcaps"] }, null, 2)
+  app: JSON.stringify({ extraKnownMarketplaces: { "copilot-marketplace": { source: { source: "github", repo: "your-org/copilot-marketplace" } } } }, null, 2),
+  cloud: JSON.stringify({ enabledPlugins: ["release-captain@copilot-marketplace", "review-companion@copilot-marketplace"], extraKnownMarketplaces: ["copilot-marketplace"] }, null, 2)
 };
 
 const $ = (id) => document.getElementById(id);

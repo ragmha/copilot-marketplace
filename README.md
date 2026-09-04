@@ -1,6 +1,6 @@
-# MCAPS Marketplace
+# Copilot Marketplace
 
-A dependency-light, static GitHub Copilot plugin marketplace prototype for internal MCAPS workflows. It follows the supplied visual direction: a large workflow-focused hero, quick actions, a marketplace install control, CLI copy action, and a featured catalog.
+A dependency-light, static GitHub Copilot plugin marketplace prototype for internal engineering workflows. It follows the supplied visual direction: a large workflow-focused hero, quick actions, a marketplace install control, CLI copy action, and a featured catalog.
 
 ## Run locally
 
