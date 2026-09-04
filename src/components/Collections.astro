@@ -1,0 +1,72 @@
+---
+import PluginRow from "./PluginRow.astro";
+import { categoryBlurbs, type Plugin } from "../lib/marketplace";
+
+interface Props {
+  plugins: Plugin[];
+}
+
+const { plugins } = Astro.props;
+
+const collections = [...new Set(plugins.map((plugin) => plugin.category))]
+  .sort((a, b) => a.localeCompare(b))
+  .map((category) => {
+    const entries = plugins
+      .filter((plugin) => plugin.category === category)
+      .sort((a, b) => b.updated.localeCompare(a.updated));
+
+    return {
+      category,
+      blurb: categoryBlurbs[category],
+      total: entries.length,
+      // A taste of each collection; the searchable catalog below has the rest.
+      entries: entries.slice(0, 3),
+    };
+  });
+---
+
+<section id="collections" class="mx-auto w-full max-w-5xl scroll-mt-16 px-6 pb-16">
+  <div class="space-y-12">
+    {
+      collections.map((collection) => (
+        <div>
+          <div class="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 class="text-xl font-bold tracking-tight">{collection.category}</h2>
+            {collection.total > collection.entries.length && (
+              <a
+                href="#catalog"
+                data-jump={collection.category}
+                class="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              >
+                All {collection.total} →
+              </a>
+            )}
+          </div>
+
+          {collection.blurb && (
+            <p class="mt-2 text-sm text-muted-foreground">{collection.blurb}</p>
+          )}
+
+          <ul class="mt-5 grid gap-3">
+            {collection.entries.map((plugin) => (
+              <PluginRow plugin={plugin} />
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  // "All N →" drops the category into the catalog search so the jump lands on
+  // a filtered view rather than the top of an unfiltered list.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-jump]")) {
+    link.addEventListener("click", () => {
+      const search = document.getElementById("search") as HTMLInputElement | null;
+      if (!search) return;
+      search.value = link.dataset.jump ?? "";
+      search.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+</script>

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "ticket-tracker",
+  "description": "Read and update work items so a change can be traced back to the ticket that requested it.",
+  "version": "1.0.5",
+  "author": {
+    "name": "Platform Engineering"
+  },
+  "repository": "https://github.com/your-org/ticket-tracker-mcp",
+  "category": "Delivery",
+  "directory": {
+    "type": "mcp-server",
+    "updated": "2026-08-14"
+  }
+}

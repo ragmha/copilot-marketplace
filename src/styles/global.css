@@ -101,3 +101,32 @@
     @apply bg-background font-mono text-foreground antialiased;
   }
 }
+
+/* Bridge React Flow's own chrome onto the shadcn tokens so it follows the theme. */
+@layer components {
+  .react-flow__edge-path {
+    stroke: var(--muted-foreground);
+    stroke-width: 1.25;
+  }
+
+  .react-flow__edge-text {
+    @apply fill-muted-foreground text-[10px];
+  }
+
+  .react-flow__edge-textbg {
+    @apply fill-background;
+  }
+
+  .react-flow__arrowhead polyline {
+    stroke: var(--muted-foreground);
+    fill: var(--muted-foreground);
+  }
+
+  .react-flow__controls-button {
+    @apply border-border bg-card fill-foreground;
+  }
+
+  .react-flow__controls-button:hover {
+    @apply bg-accent;
+  }
+}

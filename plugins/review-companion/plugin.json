@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "review-companion",
+  "description": "Review a pull request for logic errors, missing tests, and breaking changes before a human does.",
+  "version": "1.2.3",
+  "author": {
+    "name": "Developer Experience"
+  },
+  "repository": "https://github.com/your-org/review-companion",
+  "category": "Code quality",
+  "directory": {
+    "type": "plugin",
+    "featured": true,
+    "updated": "2026-09-01",
+    "contains": {
+      "skills": 1,
+      "agents": 1,
+      "hooks": 1
+    }
+  }
+}

@@ -13,7 +13,11 @@ import { marketplaceRepo } from "../lib/marketplace";
       aria-label="Primary"
       class="ml-auto flex items-center gap-5 text-xs text-muted-foreground"
     >
-      <a href="#catalog" class="transition-colors hover:text-foreground">Plugins</a>
+      <a href="#catalog" class="transition-colors hover:text-foreground">Browse</a>
+      <a href="#anatomy" class="hidden transition-colors hover:text-foreground sm:inline"
+        >What is a plugin?</a
+      >
+      <a href="#install" class="transition-colors hover:text-foreground">Install</a>
       <a
         href={`https://github.com/${marketplaceRepo}`}
         class="hidden transition-colors hover:text-foreground sm:inline">GitHub</a

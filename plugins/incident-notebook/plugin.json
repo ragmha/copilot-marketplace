@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "incident-notebook",
+  "description": "Turn an incident channel and logs into a timeline, root cause analysis, and follow-up actions.",
+  "version": "1.0.2",
+  "author": {
+    "name": "SRE Guild"
+  },
+  "repository": "https://github.com/your-org/incident-notebook",
+  "category": "Operations",
+  "directory": {
+    "type": "plugin",
+    "updated": "2026-08-19",
+    "contains": {
+      "skills": 2,
+      "mcpServers": 2
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "onboarding-buddy",
+  "description": "Answer a new joiner's questions about a service using its runbooks, ADRs, and recent pull requests.",
+  "version": "2.0.0",
+  "author": {
+    "name": "Developer Experience"
+  },
+  "repository": "https://github.com/your-org/onboarding-buddy",
+  "category": "Onboarding",
+  "directory": {
+    "type": "agent",
+    "featured": true,
+    "updated": "2026-08-30"
+  }
+}

@@ -1,0 +1,88 @@
+name: Add a plugin
+description: Propose a new plugin for the internal Copilot marketplace.
+title: "[plugin] <plugin-name>"
+labels: ["plugin-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Plugin content stays in your own repository. This issue registers it in
+        the catalog. Prefer to open a PR directly? See
+        [docs/contributing-a-plugin.md](../blob/master/docs/contributing-a-plugin.md).
+
+  - type: input
+    id: name
+    attributes:
+      label: Plugin name
+      description: kebab-case, unique. Becomes the directory name and the install identifier.
+      placeholder: release-captain
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: One sentence describing what it does for the user.
+      placeholder: Draft a changelog and release PR description from the branch diff.
+    validations:
+      required: true
+
+  - type: input
+    id: repository
+    attributes:
+      label: Repository
+      description: Where the plugin actually lives. Copilot clones this on install.
+      placeholder: https://github.com/your-org/release-captain
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: author
+    attributes:
+      label: Owning team
+      placeholder: Developer Experience
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - skill
+        - agent
+        - mcp-server
+        - prompt
+        - bundle
+    validations:
+      required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: Category
+      description: Reuse an existing category where possible.
+      placeholder: Delivery
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: The repository is visible to everyone in the organisation.
+          required: true
+        - label: It contains a valid `.github/plugin/plugin.json` (or equivalent manifest).
+          required: true
+        - label: It contains no secrets, credentials, or customer data.
+          required: true

@@ -1,0 +1,29 @@
+Add plugin registry tooling, Copilot customization, and Bun toolchain
+
+Restructure the marketplace around per-plugin manifests, borrowing the
+generate-and-validate flow from plugins-marketplace-template:
+
+- plugins/<name>/plugin.json is now the source of truth; the catalog at
+  .github/plugin/marketplace.json and public/marketplace.json is generated
+- JSON Schemas for a manifest and the aggregate, with site-only display
+  fields namespaced under a `directory` extension so the official schemas
+  stay closed
+- scripts/validate.mjs checks schemas plus name/directory match,
+  duplicates, and catalog sync; generate-marketplace.mjs has a --check
+  mode for CI
+- CI workflow, plugin submission issue form, and PR template
+
+Add the Copilot customization files the repo was missing: AGENTS.md,
+.github/copilot-instructions.md, and add-a-plugin / marketplace-site
+skills, plus docs/ for contributing, validation, and org rollout.
+
+Enforce Bun as the package manager: packageManager and engines fields, a
+preinstall guard that rejects npm/yarn/pnpm, bun.lock in place of
+package-lock.json, and setup-bun in both workflows.
+
+Site work: React Flow plugin anatomy diagram, per-plugin detail pages,
+featured cards and category collections, and the five-surface install
+guide covering CLI, VS Code, app, cloud agent, and M365 Copilot.
+
+Co-authored-by: Copilot App <223556219+Copilot@users.noreply.github.com>
+Copilot-Session: d6f62fb9-0f2b-49a5-a12d-820eef565880

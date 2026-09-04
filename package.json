@@ -3,19 +3,35 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "bun@1.4.0",
+  "engines": {
+    "bun": ">=1.4.0"
+  },
   "scripts": {
+    "preinstall": "node scripts/only-bun.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "validate": "bun scripts/validate.mjs",
+    "marketplace": "bun scripts/generate-marketplace.mjs",
+    "marketplace:check": "bun scripts/generate-marketplace.mjs --check"
   },
   "dependencies": {
+    "@astrojs/react": "^6.0.4",
     "@tailwindcss/vite": "^4.1.13",
+    "@xyflow/react": "^12.11.5",
     "astro": "^5.14.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "typescript": "^5.9.2"
   }
 }
