@@ -19,7 +19,7 @@ Ask for anything missing before writing files:
 | `author`      | Team or person that owns it                                            |
 | `repository`  | `https://github.com/<owner>/<repo>` where the plugin actually lives    |
 | `category`    | Reuse an existing one — check `plugins/*/plugin.json` first            |
-| `type`        | `skill`, `agent`, `mcp-server`, `prompt`, or `bundle`                  |
+| `type`        | `plugin`, `skill`, `agent`, `prompt`, `hook`, `mcp-server`, `extension` |
 
 ## 2. Write the manifest
 
@@ -47,9 +47,9 @@ Rules that validation enforces:
 - The schemas set `additionalProperties: false`. Anything that only the website
   needs (`type`, `featured`, `updated`, `contains`) goes inside `directory`.
 - `updated` is `YYYY-MM-DD`. Use today's date for a new entry.
-- `contains` counts components in the plugin's own repo: `skills`, `agents`,
-  `mcpServers`, `prompts`. Omit keys that are zero; omit the object entirely if
-  you do not know.
+- `contains` counts components in the plugin's own repo. The only keys the schema
+  accepts are `skills`, `agents`, `hooks`, and `mcpServers`. Omit keys that are
+  zero; omit the object entirely if you do not know.
 - Set `"featured": true` in `directory` only when the owner asked for it — the
   homepage shows the first three featured entries.
 

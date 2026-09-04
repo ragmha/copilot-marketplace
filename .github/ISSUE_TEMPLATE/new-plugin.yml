@@ -57,12 +57,15 @@ body:
     id: type
     attributes:
       label: Type
+      description: Which tab the entry appears under on the directory site.
       options:
+        - plugin
         - skill
         - agent
-        - mcp-server
         - prompt
-        - bundle
+        - hook
+        - mcp-server
+        - extension
     validations:
       required: true
 
