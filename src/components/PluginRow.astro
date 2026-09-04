@@ -1,0 +1,49 @@
+---
+import {
+  installCommand,
+  pluginArt,
+  pluginHref,
+  typeChip,
+  type Plugin,
+} from "../lib/marketplace";
+
+interface Props {
+  plugin: Plugin;
+}
+
+const { plugin } = Astro.props;
+const art = pluginArt(plugin.name);
+---
+
+<li
+  class="group relative flex items-center gap-4 rounded-lg border border-border bg-card p-4 text-card-foreground transition-colors hover:border-foreground/25 hover:bg-accent"
+>
+  <span
+    class="grid size-11 shrink-0 place-items-center rounded-lg text-sm font-bold text-background/85 select-none"
+    style={`background:${art.gradient}`}
+    aria-hidden="true"
+  >
+    {art.monogram}
+  </span>
+
+  <div class="min-w-0 flex-1">
+    <p class="flex flex-wrap items-center gap-2">
+      <a href={pluginHref(plugin.name)} class="text-sm font-bold after:absolute after:inset-0">
+        {plugin.name}
+      </a>
+      <span class="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+        {typeChip[plugin.type]}
+      </span>
+    </p>
+    <p class="mt-1 line-clamp-1 text-xs text-muted-foreground">{plugin.description}</p>
+  </div>
+
+  <button
+    type="button"
+    data-install={installCommand(plugin.name)}
+    class="relative z-10 grid size-8 shrink-0 place-items-center rounded-md border border-transparent text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+  >
+    <span class="text-base leading-none" aria-hidden="true">+</span>
+    <span class="sr-only">Copy the install command for {plugin.name}</span>
+  </button>
+</li>

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "schema-diff",
+  "description": "Compare two database schema revisions and explain the migration and rollback path for each change.",
+  "version": "0.6.2",
+  "author": {
+    "name": "Data Platform"
+  },
+  "repository": "https://github.com/your-org/schema-diff",
+  "category": "Operations",
+  "directory": {
+    "type": "skill",
+    "updated": "2026-08-24"
+  }
+}

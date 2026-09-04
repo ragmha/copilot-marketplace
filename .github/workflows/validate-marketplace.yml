@@ -1,0 +1,34 @@
+name: Validate marketplace
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    paths:
+      - "plugins/**"
+      - "schemas/**"
+      - "scripts/**"
+      - ".github/plugin/**"
+      - "public/marketplace.json"
+      - ".github/workflows/validate-marketplace.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - run: bun install --frozen-lockfile
+
+      - name: Validate plugin manifests
+        run: bun run validate
+
+      - name: Ensure the catalog is regenerated
+        run: bun run marketplace:check
+
+      - name: Build the site
+        run: bun run build

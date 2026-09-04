@@ -1,0 +1,45 @@
+---
+// One delegated handler for every `[data-install]` control on the page, so the
+// cards, rows, and grid don't each ship their own copy logic.
+---
+
+<div
+  id="install-toast"
+  role="status"
+  aria-live="polite"
+  hidden
+  class="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-lg border border-border bg-card px-4 py-3 text-xs text-card-foreground shadow-lg sm:inset-x-auto sm:right-6"
+>
+</div>
+
+<script>
+  const toast = document.getElementById("install-toast");
+  let timer: number | undefined;
+
+  const show = (message: string) => {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.hidden = false;
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      toast.hidden = true;
+    }, 4000);
+  };
+
+  document.addEventListener("click", async (event) => {
+    const target = event.target as HTMLElement | null;
+    const trigger = target?.closest<HTMLElement>("[data-install]");
+    const command = trigger?.dataset.install;
+    if (!command) return;
+
+    // These controls sit inside a card whose whole surface is a link.
+    event.preventDefault();
+
+    try {
+      await navigator.clipboard.writeText(command);
+      show(`Copied: ${command}`);
+    } catch {
+      show(`Copy failed. Run this yourself: ${command}`);
+    }
+  });
+</script>

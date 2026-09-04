@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "api-contract-check",
+  "description": "Detect breaking changes in an OpenAPI document and list the consumers each change affects.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Platform Engineering"
+  },
+  "repository": "https://github.com/your-org/api-contract-check",
+  "category": "Code quality",
+  "directory": {
+    "type": "skill",
+    "updated": "2026-08-06"
+  }
+}

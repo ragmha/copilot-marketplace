@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "test-architect",
+  "description": "Find untested paths in a change set and scaffold cases that match the project's testing conventions.",
+  "version": "0.9.0",
+  "author": {
+    "name": "Quality Engineering"
+  },
+  "repository": "https://github.com/your-org/test-architect",
+  "category": "Code quality",
+  "directory": {
+    "type": "plugin",
+    "updated": "2026-07-30",
+    "contains": {
+      "skills": 1
+    }
+  }
+}

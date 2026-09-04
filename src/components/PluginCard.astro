@@ -1,0 +1,81 @@
+---
+import {
+  describeContents,
+  describeUpdated,
+  installCommand,
+  pluginArt,
+  pluginHref,
+  typeChip,
+  type Plugin,
+} from "../lib/marketplace";
+
+interface Props {
+  plugin: Plugin;
+}
+
+const { plugin } = Astro.props;
+const art = pluginArt(plugin.name);
+const contents = describeContents(plugin.contains);
+---
+
+<article
+  class="plugin-card group relative flex flex-col rounded-xl border border-border bg-card p-5 text-card-foreground transition-colors hover:border-foreground/25 hover:bg-accent"
+  data-name={plugin.name}
+  data-type={plugin.type}
+  data-updated={plugin.updated}
+  data-search={`${plugin.name} ${plugin.description} ${plugin.category} ${plugin.author} ${plugin.version}`.toLowerCase()}
+>
+  <div class="flex items-center gap-3">
+    <span
+      class="grid size-10 shrink-0 place-items-center rounded-lg text-xs font-bold text-background/85 select-none"
+      style={`background:${art.gradient}`}
+      aria-hidden="true"
+    >
+      {art.monogram}
+    </span>
+
+    <div class="min-w-0 flex-1">
+      <h3 class="truncate text-sm font-bold tracking-tight">
+        <a href={pluginHref(plugin.name)} class="after:absolute after:inset-0">
+          {plugin.name}
+        </a>
+      </h3>
+      <p class="mt-0.5 truncate text-[11px] text-muted-foreground">{plugin.author}</p>
+    </div>
+
+    <span
+      class="shrink-0 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground"
+    >
+      {typeChip[plugin.type]}
+    </span>
+  </div>
+
+  <p class="mt-4 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+    {plugin.description}
+  </p>
+
+  {
+    contents.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-1.5">
+        {contents.map((entry) => (
+          <span class="rounded border border-border px-1.5 py-0.5 text-[11px] text-muted-foreground">
+            {entry}
+          </span>
+        ))}
+      </div>
+    )
+  }
+
+  <div class="mt-auto flex items-center gap-3 pt-5 text-[11px] text-muted-foreground">
+    <button
+      type="button"
+      data-install={installCommand(plugin.name)}
+      class="relative z-10 -m-1 flex items-center gap-1.5 p-1 transition-colors hover:text-foreground"
+    >
+      <span aria-hidden="true">+</span>
+      Install
+    </button>
+    {plugin.featured && <span class="text-primary">featured</span>}
+    <span class="ml-auto truncate" title={plugin.updated}>{describeUpdated(plugin.updated)}</span>
+  </div>
+</article>

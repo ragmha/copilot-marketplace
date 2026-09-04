@@ -1,0 +1,367 @@
+{
+  "name": "copilot-marketplace",
+  "owner": {
+    "name": "Developer Experience",
+    "email": "copilot-marketplace@example.com"
+  },
+  "metadata": {
+    "description": "Internal Copilot plugins for everyday engineering workflows.",
+    "version": "1.0.0",
+    "repository": "https://github.com/your-org/copilot-marketplace"
+  },
+  "plugins": [
+    {
+      "name": "api-contract-check",
+      "source": {
+        "source": "github",
+        "repo": "your-org/api-contract-check"
+      },
+      "description": "Detect breaking changes in an OpenAPI document and list the consumers each change affects.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Platform Engineering"
+      },
+      "repository": "https://github.com/your-org/api-contract-check",
+      "category": "Code quality",
+      "directory": {
+        "type": "skill",
+        "updated": "2026-08-06"
+      }
+    },
+    {
+      "name": "changelog-writer",
+      "source": {
+        "source": "github",
+        "repo": "your-org/changelog-writer"
+      },
+      "description": "Turn a range of commits into a changelog entry written for the people who use the service.",
+      "version": "1.3.1",
+      "author": {
+        "name": "Developer Experience"
+      },
+      "repository": "https://github.com/your-org/changelog-writer",
+      "category": "Delivery",
+      "directory": {
+        "type": "skill",
+        "updated": "2026-09-02"
+      }
+    },
+    {
+      "name": "conventional-commits",
+      "source": {
+        "source": "github",
+        "repo": "your-org/conventional-commits-hook"
+      },
+      "description": "Block a commit whose message does not follow the repository's conventional commit format.",
+      "version": "1.0.1",
+      "author": {
+        "name": "Developer Experience"
+      },
+      "repository": "https://github.com/your-org/conventional-commits-hook",
+      "category": "Code quality",
+      "directory": {
+        "type": "hook",
+        "updated": "2026-07-15"
+      }
+    },
+    {
+      "name": "design-review",
+      "source": {
+        "source": "github",
+        "repo": "your-org/design-review"
+      },
+      "description": "Prompt that interrogates a technical design for failure modes, cost, and operational burden.",
+      "version": "1.1.0",
+      "author": {
+        "name": "Platform Engineering"
+      },
+      "repository": "https://github.com/your-org/design-review",
+      "category": "Code quality",
+      "directory": {
+        "type": "prompt",
+        "updated": "2026-08-21"
+      }
+    },
+    {
+      "name": "incident-notebook",
+      "source": {
+        "source": "github",
+        "repo": "your-org/incident-notebook"
+      },
+      "description": "Turn an incident channel and logs into a timeline, root cause analysis, and follow-up actions.",
+      "version": "1.0.2",
+      "author": {
+        "name": "SRE Guild"
+      },
+      "repository": "https://github.com/your-org/incident-notebook",
+      "category": "Operations",
+      "directory": {
+        "type": "plugin",
+        "updated": "2026-08-19",
+        "contains": {
+          "skills": 2,
+          "mcpServers": 2
+        }
+      }
+    },
+    {
+      "name": "internal-docs",
+      "source": {
+        "source": "github",
+        "repo": "your-org/internal-docs-mcp"
+      },
+      "description": "Search architecture decision records, runbooks, and service catalogs from the internal docs portal.",
+      "version": "1.2.0",
+      "author": {
+        "name": "Developer Experience"
+      },
+      "repository": "https://github.com/your-org/internal-docs-mcp",
+      "category": "Onboarding",
+      "directory": {
+        "type": "mcp-server",
+        "updated": "2026-08-27"
+      }
+    },
+    {
+      "name": "migration-pilot",
+      "source": {
+        "source": "github",
+        "repo": "your-org/migration-pilot"
+      },
+      "description": "Plan and stage a dependency or framework upgrade with a reversible, reviewable change sequence.",
+      "version": "1.1.0",
+      "author": {
+        "name": "Platform Engineering"
+      },
+      "repository": "https://github.com/your-org/migration-pilot",
+      "category": "Delivery",
+      "directory": {
+        "type": "plugin",
+        "updated": "2026-08-11",
+        "contains": {
+          "skills": 2,
+          "agents": 1
+        }
+      }
+    },
+    {
+      "name": "observability",
+      "source": {
+        "source": "github",
+        "repo": "your-org/observability-mcp"
+      },
+      "description": "Query dashboards, alerts, and traces so Copilot can reason about live service behaviour.",
+      "version": "0.8.1",
+      "author": {
+        "name": "SRE Guild"
+      },
+      "repository": "https://github.com/your-org/observability-mcp",
+      "category": "Operations",
+      "directory": {
+        "type": "mcp-server",
+        "updated": "2026-09-01"
+      }
+    },
+    {
+      "name": "onboarding-buddy",
+      "source": {
+        "source": "github",
+        "repo": "your-org/onboarding-buddy"
+      },
+      "description": "Answer a new joiner's questions about a service using its runbooks, ADRs, and recent pull requests.",
+      "version": "2.0.0",
+      "author": {
+        "name": "Developer Experience"
+      },
+      "repository": "https://github.com/your-org/onboarding-buddy",
+      "category": "Onboarding",
+      "directory": {
+        "type": "agent",
+        "featured": true,
+        "updated": "2026-08-30"
+      }
+    },
+    {
+      "name": "postmortem-template",
+      "source": {
+        "source": "github",
+        "repo": "your-org/postmortem-template"
+      },
+      "description": "Prompt that turns an incident timeline into a blameless postmortem in the agreed house format.",
+      "version": "1.0.0",
+      "author": {
+        "name": "SRE Guild"
+      },
+      "repository": "https://github.com/your-org/postmortem-template",
+      "category": "Operations",
+      "directory": {
+        "type": "prompt",
+        "updated": "2026-08-08"
+      }
+    },
+    {
+      "name": "release-approver",
+      "source": {
+        "source": "github",
+        "repo": "your-org/release-approver"
+      },
+      "description": "Check a release candidate against the deployment checklist and flag anything that blocks sign-off.",
+      "version": "1.1.4",
+      "author": {
+        "name": "SRE Guild"
+      },
+      "repository": "https://github.com/your-org/release-approver",
+      "category": "Delivery",
+      "directory": {
+        "type": "agent",
+        "updated": "2026-07-22"
+      }
+    },
+    {
+      "name": "release-captain",
+      "source": {
+        "source": "github",
+        "repo": "your-org/release-captain"
+      },
+      "description": "Draft release notes, verify the branch is clean, and summarize remaining risk before you ship.",
+      "version": "1.4.0",
+      "author": {
+        "name": "Developer Experience"
+      },
+      "repository": "https://github.com/your-org/release-captain",
+      "category": "Delivery",
+      "directory": {
+        "type": "plugin",
+        "featured": true,
+        "updated": "2026-09-03",
+        "contains": {
+          "skills": 2,
+          "agents": 1
+        }
+      }
+    },
+    {
+      "name": "repo-explorer",
+      "source": {
+        "source": "github",
+        "repo": "your-org/repo-explorer"
+      },
+      "description": "Map an unfamiliar service: entry points, key modules, data flow, and where to make a change.",
+      "version": "2.1.0",
+      "author": {
+        "name": "Platform Engineering"
+      },
+      "repository": "https://github.com/your-org/repo-explorer",
+      "category": "Onboarding",
+      "directory": {
+        "type": "plugin",
+        "featured": true,
+        "updated": "2026-08-28",
+        "contains": {
+          "skills": 3,
+          "mcpServers": 1
+        }
+      }
+    },
+    {
+      "name": "review-companion",
+      "source": {
+        "source": "github",
+        "repo": "your-org/review-companion"
+      },
+      "description": "Review a pull request for logic errors, missing tests, and breaking changes before a human does.",
+      "version": "1.2.3",
+      "author": {
+        "name": "Developer Experience"
+      },
+      "repository": "https://github.com/your-org/review-companion",
+      "category": "Code quality",
+      "directory": {
+        "type": "plugin",
+        "featured": true,
+        "updated": "2026-09-01",
+        "contains": {
+          "skills": 1,
+          "agents": 1,
+          "hooks": 1
+        }
+      }
+    },
+    {
+      "name": "schema-diff",
+      "source": {
+        "source": "github",
+        "repo": "your-org/schema-diff"
+      },
+      "description": "Compare two database schema revisions and explain the migration and rollback path for each change.",
+      "version": "0.6.2",
+      "author": {
+        "name": "Data Platform"
+      },
+      "repository": "https://github.com/your-org/schema-diff",
+      "category": "Operations",
+      "directory": {
+        "type": "skill",
+        "updated": "2026-08-24"
+      }
+    },
+    {
+      "name": "secret-guard",
+      "source": {
+        "source": "github",
+        "repo": "your-org/secret-guard"
+      },
+      "description": "Scan staged changes for credentials and stop the commit before anything reaches the remote.",
+      "version": "2.2.0",
+      "author": {
+        "name": "Security Engineering"
+      },
+      "repository": "https://github.com/your-org/secret-guard",
+      "category": "Operations",
+      "directory": {
+        "type": "hook",
+        "featured": true,
+        "updated": "2026-09-02"
+      }
+    },
+    {
+      "name": "test-architect",
+      "source": {
+        "source": "github",
+        "repo": "your-org/test-architect"
+      },
+      "description": "Find untested paths in a change set and scaffold cases that match the project's testing conventions.",
+      "version": "0.9.0",
+      "author": {
+        "name": "Quality Engineering"
+      },
+      "repository": "https://github.com/your-org/test-architect",
+      "category": "Code quality",
+      "directory": {
+        "type": "plugin",
+        "updated": "2026-07-30",
+        "contains": {
+          "skills": 1
+        }
+      }
+    },
+    {
+      "name": "ticket-tracker",
+      "source": {
+        "source": "github",
+        "repo": "your-org/ticket-tracker-mcp"
+      },
+      "description": "Read and update work items so a change can be traced back to the ticket that requested it.",
+      "version": "1.0.5",
+      "author": {
+        "name": "Platform Engineering"
+      },
+      "repository": "https://github.com/your-org/ticket-tracker-mcp",
+      "category": "Delivery",
+      "directory": {
+        "type": "mcp-server",
+        "updated": "2026-08-14"
+      }
+    }
+  ]
+}

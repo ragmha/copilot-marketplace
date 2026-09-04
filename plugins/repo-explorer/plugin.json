@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "repo-explorer",
+  "description": "Map an unfamiliar service: entry points, key modules, data flow, and where to make a change.",
+  "version": "2.1.0",
+  "author": {
+    "name": "Platform Engineering"
+  },
+  "repository": "https://github.com/your-org/repo-explorer",
+  "category": "Onboarding",
+  "directory": {
+    "type": "plugin",
+    "featured": true,
+    "updated": "2026-08-28",
+    "contains": {
+      "skills": 3,
+      "mcpServers": 1
+    }
+  }
+}

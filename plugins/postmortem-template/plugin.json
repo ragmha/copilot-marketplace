@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "postmortem-template",
+  "description": "Prompt that turns an incident timeline into a blameless postmortem in the agreed house format.",
+  "version": "1.0.0",
+  "author": {
+    "name": "SRE Guild"
+  },
+  "repository": "https://github.com/your-org/postmortem-template",
+  "category": "Operations",
+  "directory": {
+    "type": "prompt",
+    "updated": "2026-08-08"
+  }
+}
