@@ -1,0 +1,45 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+
+const links = [
+  { href: "#catalog", label: "Catalog" },
+  { href: "#learning", label: "Learning hub" },
+  { href: "#contribute", label: "Contribute" },
+];
+---
+
+<header
+  class="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-md"
+>
+  <div class="mx-auto flex h-16 w-full max-w-6xl items-center gap-8 px-6">
+    <a href="#top" class="flex items-center gap-2.5 text-sm whitespace-nowrap">
+      <span
+        class="grid size-8 place-items-center rounded-lg rounded-bl-sm bg-primary text-base font-extrabold text-primary-foreground"
+        >C</span
+      >
+      <span>Copilot <strong class="font-bold">Marketplace</strong></span>
+    </a>
+
+    <nav
+      aria-label="Primary"
+      class="mr-auto hidden gap-7 text-sm text-muted-foreground sm:flex"
+    >
+      {
+        links.map((link) => (
+          <a href={link.href} class="transition-colors hover:text-foreground">
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="ml-auto flex items-center gap-3 sm:ml-0">
+      <a
+        href="#install"
+        class="hidden text-sm font-semibold text-primary transition-opacity hover:opacity-80 sm:inline"
+        >Get started &nearr;</a
+      >
+      <ThemeToggle />
+    </div>
+  </div>
+</header>

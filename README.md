@@ -1,38 +1,74 @@
 # Copilot Marketplace
 
-A dependency-light, static GitHub Copilot plugin marketplace prototype for internal engineering workflows. It follows the supplied visual direction: a large workflow-focused hero, quick actions, a marketplace install control, CLI copy action, and a featured catalog.
+An internal GitHub Copilot plugin marketplace, built with [Astro](https://astro.build) and
+[Tailwind CSS v4](https://tailwindcss.com) using shadcn theme tokens, with light and dark mode.
 
-## Run locally
+## Develop
 
-The browser must load `marketplace.json` over HTTP because the app uses `fetch`. From this directory, run any static file server, for example:
-
-```powershell
-python -m http.server 8000
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # static output in dist/
+npm run preview  # serve the production build
 ```
 
-Open `http://localhost:8000` in a browser.
+## How it fits together
 
-## Catalog model
+| Path                      | Purpose                                                                                             |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| `public/marketplace.json` | The catalog. Read at build time to render the page, and served as-is for Copilot clients to consume. |
+| `src/lib/marketplace.ts`  | Catalog types plus the CLI command and settings snippets shown in the UI.                            |
+| `src/styles/global.css`   | shadcn design tokens for light and dark, mapped into Tailwind via `@theme inline`.                   |
+| `src/components/`         | Header, hero, featured, catalog, learning/contribute sections, footer, theme toggle.                 |
 
-`marketplace.json` is the source of truth for the UI and is intentionally compatible with the Copilot plugin marketplace concept. Each plugin entry includes:
+### Theming
+
+The theme uses shadcn's CSS variable convention (`--background`, `--primary`, `--muted-foreground`, …)
+defined in `:root` and overridden under `.dark`. Tailwind utilities such as `bg-card` and
+`text-muted-foreground` resolve to those variables, so both modes come from one set of tokens.
+
+Dark mode is class-based (`@custom-variant dark`). An inline script in `Layout.astro` applies the
+stored or system preference before first paint, so there is no flash of the wrong theme.
+
+### Catalog schema
+
+Each entry in `plugins[]` describes one plugin:
 
 - `name`, `description`, `version`, `author`
 - `category`, `featured`, and `icon` for discovery
-- `repository`, pointing to the plugin repository containing a root `plugin.json`
+- `repository`, pointing to the plugin repository that contains a root `plugin.json`
 
-A plugin repository can contain custom agents in `agents/`, skills in `skills/`, hooks, and MCP/LSP configuration. Keep each plugin independently versioned and reviewable.
+A plugin repository can contain custom agents in `agents/`, skills in `skills/`, hooks, and MCP/LSP
+configuration. Keep each plugin independently versioned and reviewable.
 
 ## Make it an internal GitHub marketplace
 
-1. Create an organization-owned repository for this site/catalog and set its visibility to **Internal** (or **Private** where internal visibility is unavailable). Restrict write access to the marketplace maintainers team and require pull requests and CODEOWNERS review for catalog changes.
-2. Create one repository per plugin, with a root `plugin.json` and the relevant `agents/`, `skills/`, `hooks.json`, `.mcp.json`, or `lsp.json` files. Use repository branch protection and security scanning on each plugin repository.
-3. Update `owner`, `metadata.repository`, and each plugin `repository` URL in `marketplace.json` to your enterprise organization. Do not put tokens, client secrets, or private API credentials in this static site.
-4. In the repository **Settings → Pages**, select **GitHub Actions** as the source. The included `.github/workflows/pages.yml` publishes the static site on pushes to `master`.
-5. In GitHub Enterprise, confirm the Pages visibility policy for your organization. GitHub Pages sites are not automatically private just because the source repository is private; use the enterprise-supported internal/private Pages option or serve the same static artifact behind your approved internal gateway.
-6. Register the marketplace with Copilot. In Copilot CLI, use `copilot plugin marketplace add <marketplace-url>` (or the `/plugin marketplace add` command). For cloud agent or repository configuration, use `extraKnownMarketplaces` and `enabledPlugins` in `.github/copilot/settings.json`. Enterprise administrators can apply approved plugin standards centrally.
+1. Create an organization-owned repository for this site and catalog, and set its visibility to
+   **Internal** (or **Private** where internal visibility is unavailable). Restrict write access to
+   the marketplace maintainers team, and require pull requests and CODEOWNERS review for catalog
+   changes.
+2. Create one repository per plugin, with a root `plugin.json` and the relevant `agents/`, `skills/`,
+   `hooks.json`, `.mcp.json`, or `lsp.json` files. Apply branch protection and security scanning to
+   each plugin repository.
+3. Update `marketplaceRepo` in `src/lib/marketplace.ts` and the `repository` URLs in
+   `public/marketplace.json` to your organization. Do not put tokens, client secrets, or private API
+   credentials in this static site.
+4. In **Settings → Pages**, select **GitHub Actions** as the source. `.github/workflows/pages.yml`
+   builds the Astro site and publishes `dist/` on pushes to `master`. The workflow passes the Pages
+   base path to the build, so the site works from a project page URL.
+5. Confirm the Pages visibility policy for your enterprise. A Pages site is not automatically private
+   just because its source repository is private; use the enterprise-supported internal/private Pages
+   option, or serve the same static artifact behind your approved internal gateway.
+6. Register the marketplace with Copilot. In Copilot CLI, run
+   `copilot plugin marketplace add <marketplace-url>` (or `/plugin marketplace add`). For the Copilot
+   app and cloud agent, use `extraKnownMarketplaces` and `enabledPlugins` in
+   `.github/copilot/settings.json`. Enterprise administrators can apply approved plugin standards
+   centrally.
 
-The UI's install dropdown copies example settings for the Copilot app and cloud agent. Replace the sample organization and plugin names before rolling out to users.
+The hero's install control copies ready-to-paste settings for the Copilot app, the cloud agent, and
+the CLI. Replace the sample organization and plugin names before rolling this out to users.
 
-## Source of truth
+## Reference
 
-See [About GitHub Copilot plugins](https://docs.github.com/en/copilot/concepts/agents/about-plugins) and the [Copilot CLI plugin marketplace guide](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-marketplace) for the current manifest and marketplace fields.
+- [About GitHub Copilot plugins](https://docs.github.com/en/copilot/concepts/agents/about-plugins)
+- [Creating a plugin marketplace for GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-marketplace)
