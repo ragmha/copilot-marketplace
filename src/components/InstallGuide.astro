@@ -1,12 +1,19 @@
 ---
-import { installGuides } from "../lib/marketplace";
+import { installGuidesFor } from "../lib/marketplace";
+
+interface Props {
+  plugin: string;
+}
+
+const { plugin } = Astro.props;
+const installGuides = installGuidesFor(plugin);
 ---
 
-<section id="install" class="mx-auto w-full max-w-5xl scroll-mt-16 px-6 pb-20">
-  <h2 class="text-xl font-bold tracking-tight">Installation</h2>
-  <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-    Register the marketplace once per client. After that, installing a plugin is a single
-    command or a single click.
+<section id="install" class="scroll-mt-20">
+  <h2 class="text-sm font-bold tracking-tight">Install {plugin}</h2>
+  <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+    Register the marketplace once per client, then install this plugin. Pick the client you
+    use.
   </p>
 
   <div
