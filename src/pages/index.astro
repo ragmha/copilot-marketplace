@@ -2,9 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Hero from "../components/Hero.astro";
-import Featured from "../components/Featured.astro";
 import Catalog from "../components/Catalog.astro";
-import Sections from "../components/Sections.astro";
 import Footer from "../components/Footer.astro";
 import catalog from "../../public/marketplace.json";
 import type { Marketplace } from "../lib/marketplace";
@@ -12,16 +10,13 @@ import type { Marketplace } from "../lib/marketplace";
 // `marketplace.json` lives in `public/` so it is both the build-time source for
 // this page and the file Copilot clients fetch from the deployed site.
 const { plugins, metadata } = catalog as Marketplace;
-const featured = plugins.filter((plugin) => plugin.featured).slice(0, 3);
 ---
 
 <Layout title="Copilot Marketplace" description={metadata.description}>
   <Header />
   <main>
-    <Hero />
-    <Featured plugins={featured} />
+    <Hero count={plugins.length} />
     <Catalog plugins={plugins} />
-    <Sections />
   </main>
   <Footer />
 </Layout>

@@ -19,13 +19,19 @@ npm run preview  # serve the production build
 | `public/marketplace.json` | The catalog. Read at build time to render the page, and served as-is for Copilot clients to consume. |
 | `src/lib/marketplace.ts`  | Catalog types plus the CLI command and settings snippets shown in the UI.                            |
 | `src/styles/global.css`   | shadcn design tokens for light and dark, mapped into Tailwind via `@theme inline`.                   |
-| `src/components/`         | Header, hero, featured, catalog, learning/contribute sections, footer, theme toggle.                 |
+| `src/components/`         | Header, hero with the install command, plugin grid, card, footer, theme toggle.                      |
+
+The page is deliberately one screen of chrome: a header, a hero with a single
+copyable install command, and one searchable grid of every plugin. There is no
+separate featured, learning, or contribute section — a plugin's own repository is
+the place for its documentation.
 
 ### Theming
 
 The theme uses shadcn's CSS variable convention (`--background`, `--primary`, `--muted-foreground`, …)
 defined in `:root` and overridden under `.dark`. Tailwind utilities such as `bg-card` and
 `text-muted-foreground` resolve to those variables, so both modes come from one set of tokens.
+Type is monospace throughout, so the install command reads as a terminal line rather than a banner.
 
 Dark mode is class-based (`@custom-variant dark`). An inline script in `Layout.astro` applies the
 stored or system preference before first paint, so there is no flash of the wrong theme.
@@ -65,8 +71,9 @@ configuration. Keep each plugin independently versioned and reviewable.
    `.github/copilot/settings.json`. Enterprise administrators can apply approved plugin standards
    centrally.
 
-The hero's install control copies ready-to-paste settings for the Copilot app, the cloud agent, and
-the CLI. Replace the sample organization and plugin names before rolling this out to users.
+The hero's install command copies the Copilot CLI line, with the app and cloud agent settings
+available alongside it. Replace the sample organization and plugin names before rolling this out to
+users.
 
 ## Reference
 
