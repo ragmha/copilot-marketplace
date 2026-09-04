@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "observability",
+  "description": "Query dashboards, alerts, and traces so Copilot can reason about live service behaviour.",
+  "version": "0.8.1",
+  "author": {
+    "name": "SRE Guild"
+  },
+  "repository": "https://github.com/your-org/observability-mcp",
+  "category": "Operations",
+  "directory": {
+    "type": "mcp-server",
+    "updated": "2026-09-01"
+  }
+}

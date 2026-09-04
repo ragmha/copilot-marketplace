@@ -1,0 +1,16 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "secret-guard",
+  "description": "Scan staged changes for credentials and stop the commit before anything reaches the remote.",
+  "version": "2.2.0",
+  "author": {
+    "name": "Security Engineering"
+  },
+  "repository": "https://github.com/your-org/secret-guard",
+  "category": "Operations",
+  "directory": {
+    "type": "hook",
+    "featured": true,
+    "updated": "2026-09-02"
+  }
+}

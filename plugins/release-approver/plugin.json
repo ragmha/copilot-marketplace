@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "release-approver",
+  "description": "Check a release candidate against the deployment checklist and flag anything that blocks sign-off.",
+  "version": "1.1.4",
+  "author": {
+    "name": "SRE Guild"
+  },
+  "repository": "https://github.com/your-org/release-approver",
+  "category": "Delivery",
+  "directory": {
+    "type": "agent",
+    "updated": "2026-07-22"
+  }
+}

@@ -1,5 +1,5 @@
 ---
-import type { Plugin } from "../lib/marketplace";
+import { pluginTypes, type Plugin } from "../lib/marketplace";
 import PluginCard from "./PluginCard.astro";
 
 interface Props {
@@ -7,55 +7,71 @@ interface Props {
 }
 
 const { plugins } = Astro.props;
-const categories = ["All", ...new Set(plugins.map((plugin) => plugin.category))];
+
+const tabs = pluginTypes.map((entry) => ({
+  ...entry,
+  count: plugins.filter((plugin) => plugin.type === entry.type).length,
+}));
+
+// Newest first, so the default view matches the default sort.
+const sorted = [...plugins].sort((a, b) => b.updated.localeCompare(a.updated));
 ---
 
 <section id="catalog" class="mx-auto w-full max-w-5xl scroll-mt-16 px-6 pb-20">
-  <div class="flex flex-wrap items-center gap-3">
-    <label class="flex min-w-0 flex-1 items-center gap-2 border-b border-border pb-2">
-      <span class="sr-only">Search plugins</span>
-      <span class="text-muted-foreground" aria-hidden="true">/</span>
-      <input
-        id="search"
-        type="search"
-        placeholder="search plugins"
-        autocomplete="off"
-        class="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-      />
-    </label>
-    <span id="result-count" class="shrink-0 pb-2 text-xs text-muted-foreground"></span>
-  </div>
-
-  <div
-    id="filters"
-    role="group"
-    aria-label="Filter by category"
-    class="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-xs"
-  >
+  <div id="tabs" role="group" aria-label="Filter by type" class="flex flex-wrap gap-2">
     {
-      categories.map((category) => (
+      tabs.map((tab) => (
         <button
           type="button"
-          data-category={category}
-          aria-pressed={category === "All" ? "true" : "false"}
-          class="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground aria-pressed:text-foreground aria-pressed:underline"
+          data-type={tab.type}
+          disabled={tab.count === 0}
+          aria-pressed={tab.type === "plugin" ? "true" : "false"}
+          class="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background"
         >
-          {category.toLowerCase()}
+          {tab.label}
+          <span class="text-muted-foreground aria-pressed:text-background">{tab.count}</span>
         </button>
       ))
     }
   </div>
 
-  <div id="plugin-grid" class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    {plugins.map((plugin) => <PluginCard plugin={plugin} />)}
+  <div class="mt-6 flex flex-wrap items-end gap-4">
+    <label class="flex min-w-0 flex-1 items-center gap-2 border-b border-border pb-2">
+      <span class="sr-only">Search the directory</span>
+      <span class="text-muted-foreground" aria-hidden="true">/</span>
+      <input
+        id="search"
+        type="search"
+        placeholder="search names, descriptions, authors, and versions"
+        autocomplete="off"
+        class="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+      />
+    </label>
+
+    <label class="flex items-center gap-2 border-b border-border pb-2 text-xs">
+      <span class="text-muted-foreground">Sort</span>
+      <select
+        id="sort"
+        class="bg-transparent text-foreground outline-none [&>option]:bg-background"
+      >
+        <option value="recent">Recently updated</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </label>
+  </div>
+
+  <p id="result-count" class="mt-4 text-xs text-muted-foreground"></p>
+
+  <div id="plugin-grid" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {sorted.map((plugin) => <PluginCard plugin={plugin} />)}
   </div>
 
   <p
     id="empty-state"
     hidden
-    class="mt-6 rounded-lg border border-dashed border-border p-10 text-center text-xs text-muted-foreground"
+    class="mt-4 rounded-lg border border-dashed border-border p-10 text-center text-xs text-muted-foreground"
   >
-    No plugins match that search.
+    Nothing matches that search.
   </p>
 </section>
 
@@ -63,42 +79,51 @@ const categories = ["All", ...new Set(plugins.map((plugin) => plugin.category))]
   const cards = Array.from(
     document.querySelectorAll<HTMLElement>("#plugin-grid .plugin-card"),
   );
-  const filters = Array.from(
-    document.querySelectorAll<HTMLButtonElement>("#filters [data-category]"),
+  const tabs = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("#tabs [data-type]"),
   );
   const search = document.getElementById("search") as HTMLInputElement | null;
+  const sort = document.getElementById("sort") as HTMLSelectElement | null;
   const count = document.getElementById("result-count");
   const empty = document.getElementById("empty-state");
 
-  let category = "All";
+  let type = "plugin";
   let query = "";
+
+  // Sorting reorders with CSS `order` so the grid never has to re-render.
+  const applySort = () => {
+    const mode = sort?.value ?? "recent";
+    const ranked = [...cards].sort((a, b) =>
+      mode === "name"
+        ? (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "")
+        : (b.dataset.updated ?? "").localeCompare(a.dataset.updated ?? ""),
+    );
+    ranked.forEach((card, index) => {
+      card.style.order = String(index);
+    });
+  };
 
   const render = () => {
     let visible = 0;
 
     for (const card of cards) {
-      const matchesCategory =
-        category === "All" || card.dataset.category === category;
-      const matchesQuery = (card.dataset.search ?? "").includes(query);
-      const show = matchesCategory && matchesQuery;
+      const show =
+        card.dataset.type === type && (card.dataset.search ?? "").includes(query);
       card.hidden = !show;
       if (show) visible += 1;
     }
 
     if (count) {
-      count.textContent = `${visible} ${visible === 1 ? "plugin" : "plugins"}`;
+      count.textContent = `${visible} ${visible === 1 ? "result" : "results"}`;
     }
     if (empty) empty.hidden = visible !== 0;
   };
 
-  for (const filter of filters) {
-    filter.addEventListener("click", () => {
-      category = filter.dataset.category ?? "All";
-      for (const other of filters) {
-        other.setAttribute(
-          "aria-pressed",
-          String(other.dataset.category === category),
-        );
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => {
+      type = tab.dataset.type ?? "plugin";
+      for (const other of tabs) {
+        other.setAttribute("aria-pressed", String(other.dataset.type === type));
       }
       render();
     });
@@ -109,5 +134,8 @@ const categories = ["All", ...new Set(plugins.map((plugin) => plugin.category))]
     render();
   });
 
+  sort?.addEventListener("change", applySort);
+
+  applySort();
   render();
 </script>

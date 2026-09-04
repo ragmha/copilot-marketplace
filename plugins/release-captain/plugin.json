@@ -1,0 +1,20 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "release-captain",
+  "description": "Draft release notes, verify the branch is clean, and summarize remaining risk before you ship.",
+  "version": "1.4.0",
+  "author": {
+    "name": "Developer Experience"
+  },
+  "repository": "https://github.com/your-org/release-captain",
+  "category": "Delivery",
+  "directory": {
+    "type": "plugin",
+    "featured": true,
+    "updated": "2026-09-03",
+    "contains": {
+      "skills": 2,
+      "agents": 1
+    }
+  }
+}
