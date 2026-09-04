@@ -1,74 +1,74 @@
 {
-  "name": "MCAPS Marketplace",
+  "name": "Copilot Marketplace",
   "owner": {
-    "name": "MCAPS Engineering",
-    "email": "mcaps-marketplace@example.com"
+    "name": "Developer Experience",
+    "email": "copilot-marketplace@example.com"
   },
   "metadata": {
-    "description": "Internal Copilot plugins for customer-ready workflows.",
+    "description": "Internal Copilot plugins for everyday engineering workflows.",
     "version": "1.0.0",
-    "repository": "https://github.com/mcaps/copilot-marketplace"
+    "repository": "https://github.com/your-org/copilot-marketplace"
   },
   "plugins": [
     {
-      "name": "QBR Storyteller",
-      "description": "Turn account signals, wins, and risks into a crisp QBR narrative and meeting brief.",
+      "name": "Release Captain",
+      "description": "Draft release notes, verify the branch is clean, and summarize remaining risk before you ship.",
       "version": "1.4.0",
-      "category": "Customer moments",
-      "author": "Field Excellence",
+      "category": "Delivery",
+      "author": "Developer Experience",
       "icon": "↗",
       "featured": true,
-      "repository": "https://github.com/mcaps/qbr-storyteller"
+      "repository": "https://github.com/your-org/release-captain"
     },
     {
-      "name": "Account Researcher",
-      "description": "Create an executive account snapshot from public signals, relationship context, and whitespace.",
+      "name": "Repo Explorer",
+      "description": "Map an unfamiliar service: entry points, key modules, data flow, and where to make a change.",
       "version": "2.1.0",
-      "category": "Account intelligence",
-      "author": "MCAPS Insights",
+      "category": "Onboarding",
+      "author": "Platform Engineering",
       "icon": "◎",
       "featured": true,
-      "repository": "https://github.com/mcaps/account-researcher"
+      "repository": "https://github.com/your-org/repo-explorer"
     },
     {
-      "name": "Pipeline Coach",
-      "description": "Review an opportunity, identify next actions, and generate a mutual action plan.",
+      "name": "Review Companion",
+      "description": "Review a pull request for logic errors, missing tests, and breaking changes before a human does.",
       "version": "1.2.3",
-      "category": "Pipeline",
-      "author": "Revenue Programs",
+      "category": "Code quality",
+      "author": "Developer Experience",
       "icon": "⌁",
       "featured": true,
-      "repository": "https://github.com/mcaps/pipeline-coach"
+      "repository": "https://github.com/your-org/review-companion"
     },
     {
-      "name": "Meeting Brief",
-      "description": "Prepare a customer meeting brief with objectives, stakeholders, and suggested questions.",
+      "name": "Incident Notebook",
+      "description": "Turn an incident channel and logs into a timeline, root cause analysis, and follow-up actions.",
       "version": "1.0.2",
-      "category": "Customer moments",
-      "author": "Field Excellence",
+      "category": "Operations",
+      "author": "SRE Guild",
       "icon": "▤",
       "featured": false,
-      "repository": "https://github.com/mcaps/meeting-brief"
+      "repository": "https://github.com/your-org/incident-notebook"
     },
     {
-      "name": "Competitive Compass",
-      "description": "Structure competitive observations into differentiators, proof points, and talk tracks.",
+      "name": "Test Architect",
+      "description": "Find untested paths in a change set and scaffold cases that match the project's testing conventions.",
       "version": "0.9.0",
-      "category": "Account intelligence",
-      "author": "Industry Solutions",
+      "category": "Code quality",
+      "author": "Quality Engineering",
       "icon": "✦",
       "featured": false,
-      "repository": "https://github.com/mcaps/competitive-compass"
+      "repository": "https://github.com/your-org/test-architect"
     },
     {
-      "name": "Forecast Focus",
-      "description": "Surface forecast risks and produce a concise inspection checklist for pipeline reviews.",
+      "name": "Migration Pilot",
+      "description": "Plan and stage a dependency or framework upgrade with a reversible, reviewable change sequence.",
       "version": "1.1.0",
-      "category": "Pipeline",
-      "author": "Revenue Programs",
+      "category": "Delivery",
+      "author": "Platform Engineering",
       "icon": "◒",
       "featured": false,
-      "repository": "https://github.com/mcaps/forecast-focus"
+      "repository": "https://github.com/your-org/migration-pilot"
     }
   ]
 }
