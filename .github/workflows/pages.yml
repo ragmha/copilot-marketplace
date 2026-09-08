@@ -32,6 +32,10 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          # Turn Pages on for the repository if it is not already, so a fork
+          # does not have to visit Settings before the first deploy succeeds.
+          enablement: true
 
       - name: Build site
         run: bun run build
