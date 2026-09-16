@@ -1,141 +1,195 @@
 ---
-import { pluginTypes, type Plugin } from "../lib/marketplace";
+import { categoryBlurbs, pluginTypes, type Plugin } from "../lib/marketplace";
 import PluginCard from "./PluginCard.astro";
 
-interface Props {
-  plugins: Plugin[];
-}
-
+type Props = { plugins: Plugin[] };
 const { plugins } = Astro.props;
-
-const tabs = pluginTypes.map((entry) => ({
-  ...entry,
-  count: plugins.filter((plugin) => plugin.type === entry.type).length,
+const categories = [...new Set(plugins.map((plugin) => plugin.category))].sort();
+const groups = categories.map((category) => ({
+  category,
+  entries: plugins.filter((plugin) => plugin.category === category)
+    .sort((a, b) => b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name)),
 }));
-
-// Newest first, so the default view matches the default sort.
-const sorted = [...plugins].sort((a, b) => b.updated.localeCompare(a.updated));
 ---
 
-<section id="catalog" class="mx-auto w-full max-w-5xl scroll-mt-16 px-6 pb-20">
-  <div id="tabs" role="group" aria-label="Filter by type" class="flex flex-wrap gap-2">
-    {
-      tabs.map((tab) => (
-        <button
-          type="button"
-          data-type={tab.type}
-          disabled={tab.count === 0}
-          aria-pressed={tab.type === "plugin" ? "true" : "false"}
-          class="flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40 aria-pressed:border-foreground aria-pressed:bg-foreground aria-pressed:text-background"
-        >
-          {tab.label}
-          <span class="text-muted-foreground aria-pressed:text-background">{tab.count}</span>
+<section id="catalog" aria-label="Marketplace catalog" class="scroll-mt-40 lg:scroll-mt-24">
+  <div class="border-b border-border bg-card">
+    <div id="categories" role="group" aria-label="Filter by use case" class="mx-auto flex w-full max-w-7xl flex-wrap gap-2 px-5 py-3 sm:px-6">
+      {["", ...categories].map((category) => (
+        <button type="button" data-category={category} aria-pressed={category === "" ? "true" : "false"} aria-controls="plugin-grid" class="min-h-10 rounded-full border border-transparent bg-muted/60 px-4 text-xs text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-pressed:border-primary aria-pressed:bg-primary/5 aria-pressed:text-primary">
+          {category || "All capabilities"}
         </button>
-      ))
-    }
+      ))}
+    </div>
   </div>
 
-  <div class="mt-6 flex flex-wrap items-end gap-4">
-    <label class="flex min-w-0 flex-1 items-center gap-2 border-b border-border pb-2">
-      <span class="sr-only">Search the directory</span>
-      <span class="text-muted-foreground" aria-hidden="true">/</span>
-      <input
-        id="search"
-        type="search"
-        placeholder="search names, descriptions, authors, and versions"
-        autocomplete="off"
-        class="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-      />
-    </label>
+  <div class="mx-auto w-full max-w-7xl px-5 pt-5 pb-16 sm:px-6">
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+      <p id="result-count" role="status" aria-live="polite" aria-atomic="true" class="mr-auto text-xs text-muted-foreground">
+        {plugins.length} {plugins.length === 1 ? "entry" : "entries"}
+      </p>
+      <label class="flex items-center gap-2 text-xs">
+        <span class="text-muted-foreground">Type</span>
+        <select id="type" aria-controls="plugin-grid" class="min-h-10 rounded-md border border-border bg-card px-3 text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+          <option value="all">All types</option>
+          {pluginTypes.map((entry) => <option value={entry.type}>{entry.label}</option>)}
+        </select>
+      </label>
+      <label class="flex items-center gap-2 text-xs">
+        <span class="text-muted-foreground">Sort</span>
+        <select id="sort" aria-controls="plugin-grid" class="min-h-10 rounded-md border border-border bg-card px-3 text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+          <option value="relevance">Best match</option>
+          <option value="recent">Recently updated</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </label>
+      <button type="button" data-reset-catalog disabled class="min-h-10 rounded px-2 text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:no-underline">Reset filters</button>
+    </div>
+    <noscript><p class="mt-3 text-sm text-muted-foreground">Search and filters require JavaScript. All entries are listed below.</p></noscript>
 
-    <label class="flex items-center gap-2 border-b border-border pb-2 text-xs">
-      <span class="text-muted-foreground">Sort</span>
-      <select
-        id="sort"
-        class="bg-transparent text-foreground outline-none [&>option]:bg-background"
-      >
-        <option value="recent">Recently updated</option>
-        <option value="name">Name A–Z</option>
-      </select>
-    </label>
+    <div id="plugin-grid" class="mt-7 space-y-10">
+      {groups.map((group, index) => (
+        <section data-catalog-group data-category={group.category} aria-labelledby={`category-heading-${index}`}>
+          <div class="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-border pb-3">
+            <div>
+              <h2 id={`category-heading-${index}`} class="text-xl font-bold tracking-tight">{group.category}</h2>
+              {categoryBlurbs[group.category] && <p class="mt-1.5 text-xs leading-relaxed text-muted-foreground">{categoryBlurbs[group.category]}</p>}
+            </div>
+            <p data-group-count class="text-[11px] text-muted-foreground">{group.entries.length} entries</p>
+          </div>
+          <div data-category-grid class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {group.entries.map((plugin) => <PluginCard plugin={plugin} />)}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <div id="empty-state" hidden class="mt-7 rounded-lg border border-dashed border-border bg-card p-8 text-center">
+      <h2 class="text-base font-bold">{plugins.length ? "No matching entries" : "Your marketplace starts here"}</h2>
+      <p class="mt-2 text-sm text-muted-foreground">{plugins.length ? "Try a shorter search, choose another type, or reset the filters." : "Add your first plugin manifest to publish a capability for your team."}</p>
+      {plugins.length > 0 && <button type="button" data-reset-catalog class="mt-4 min-h-10 rounded-md border border-border bg-background px-4 text-sm hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring">Show all entries</button>}
+    </div>
   </div>
-
-  <p id="result-count" class="mt-4 text-xs text-muted-foreground"></p>
-
-  <div id="plugin-grid" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    {sorted.map((plugin) => <PluginCard plugin={plugin} />)}
-  </div>
-
-  <p
-    id="empty-state"
-    hidden
-    class="mt-4 rounded-lg border border-dashed border-border p-10 text-center text-xs text-muted-foreground"
-  >
-    Nothing matches that search.
-  </p>
 </section>
 
 <script>
-  const cards = Array.from(
-    document.querySelectorAll<HTMLElement>("#plugin-grid .plugin-card"),
-  );
-  const tabs = Array.from(
-    document.querySelectorAll<HTMLButtonElement>("#tabs [data-type]"),
-  );
+  import { defaultCatalogState, readCatalogState, selectCatalogItems, updateCatalogUrl } from "../lib/catalog";
+  import { pluginTypes } from "../lib/marketplace";
+
+  const cards = Array.from(document.querySelectorAll<HTMLElement>("#plugin-grid .plugin-card"));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>("[data-catalog-group]"));
+  const categoryButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("#categories [data-category]"));
   const search = document.getElementById("search") as HTMLInputElement | null;
+  const type = document.getElementById("type") as HTMLSelectElement | null;
   const sort = document.getElementById("sort") as HTMLSelectElement | null;
+  const form = document.getElementById("catalog-search");
+  const grid = document.getElementById("plugin-grid");
   const count = document.getElementById("result-count");
   const empty = document.getElementById("empty-state");
-
-  let type = "plugin";
-  let query = "";
-
-  // Sorting reorders with CSS `order` so the grid never has to re-render.
-  const applySort = () => {
-    const mode = sort?.value ?? "recent";
-    const ranked = [...cards].sort((a, b) =>
-      mode === "name"
-        ? (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "")
-        : (b.dataset.updated ?? "").localeCompare(a.dataset.updated ?? ""),
-    );
-    ranked.forEach((card, index) => {
-      card.style.order = String(index);
-    });
+  const clear = document.getElementById("clear-search");
+  const resetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-reset-catalog]"));
+  if (!search || !type || !sort || !form || !grid || !count || !empty || !clear) {
+    throw new Error("The catalog is missing required search controls.");
+  }
+  search.setAttribute("aria-controls", "plugin-grid");
+  const attribute = (element: HTMLElement, key: string) => {
+    const value = element.dataset[key];
+    if (value === undefined) throw new Error(`Catalog element is missing data-${key}.`);
+    return value;
   };
+  const items = cards.map((element) => ({
+    element,
+    name: attribute(element, "name"),
+    type: attribute(element, "type"),
+    category: attribute(element, "category"),
+    updated: attribute(element, "updated"),
+    searchText: attribute(element, "search"),
+  }));
+  const groupElements = groups.map((element) => {
+    const container = element.querySelector<HTMLElement>("[data-category-grid]");
+    const count = element.querySelector<HTMLElement>("[data-group-count]");
+    if (!container || !count) throw new Error("A catalog group is missing its grid or count.");
+    return { element, container, count, category: attribute(element, "category") };
+  });
+  const types = pluginTypes.map((entry) => entry.type);
+  const categories = groupElements.map((group) => group.category);
+  let state = readCatalogState(new URLSearchParams(window.location.search), types, categories);
 
   const render = () => {
-    let visible = 0;
-
-    for (const card of cards) {
-      const show =
-        card.dataset.type === type && (card.dataset.search ?? "").includes(query);
-      card.hidden = !show;
-      if (show) visible += 1;
+    const matches = selectCatalogItems(items, state);
+    const visible = new Set(matches.map((item) => item.element));
+    for (const card of cards) card.hidden = !visible.has(card);
+    const orderedGroups = state.query
+      ? [...groupElements].sort((a, b) =>
+        matches.findIndex((item) => item.category === a.category) -
+        matches.findIndex((item) => item.category === b.category))
+      : groupElements;
+    for (const group of orderedGroups) {
+      const entries = matches.filter((item) => item.category === group.category);
+      group.element.hidden = entries.length === 0;
+      group.count.textContent = `${entries.length} ${entries.length === 1 ? "entry" : "entries"}`;
+      // Move real elements so reading and keyboard order match the visible sort.
+      for (const entry of entries) group.container.append(entry.element);
+      grid.append(group.element);
     }
-
-    if (count) {
-      count.textContent = `${visible} ${visible === 1 ? "result" : "results"}`;
-    }
-    if (empty) empty.hidden = visible !== 0;
+    for (const button of categoryButtons) button.setAttribute("aria-pressed", String(button.dataset.category === state.category));
+    count.textContent = `${matches.length} of ${items.length} ${items.length === 1 ? "entry" : "entries"}` +
+      (state.query ? ` matching "${state.query}"` : "");
+    empty.hidden = matches.length !== 0;
+    clear.hidden = search.value.length === 0;
+    const filtered = Boolean(state.query || state.type !== "all" || state.category);
+    for (const button of resetButtons) button.disabled = !filtered && state.sort === "relevance";
   };
-
-  for (const tab of tabs) {
-    tab.addEventListener("click", () => {
-      type = tab.dataset.type ?? "plugin";
-      for (const other of tabs) {
-        other.setAttribute("aria-pressed", String(other.dataset.type === type));
-      }
-      render();
+  const syncControls = () => {
+    search.value = state.query;
+    type.value = state.type;
+    sort.value = state.sort;
+  };
+  const update = (mode: "push" | "replace") => {
+    render();
+    const url = updateCatalogUrl(new URL(window.location.href), state);
+    if (url.href !== window.location.href) {
+      if (mode === "push") history.pushState(null, "", url);
+      else history.replaceState(null, "", url);
+    }
+  };
+  for (const button of categoryButtons) {
+    button.addEventListener("click", () => {
+      state.category = attribute(button, "category");
+      update("push");
     });
   }
-
-  search?.addEventListener("input", () => {
-    query = search.value.trim().toLowerCase();
+  search.addEventListener("input", () => {
+    state.query = search.value.trim();
+    update("replace");
+  });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.query = search.value.trim();
+    update("replace");
+    document.getElementById("catalog")?.scrollIntoView();
+  });
+  type.addEventListener("change", () => {
+    state.type = types.find((entry) => entry === type.value) ?? "all";
+    update("push");
+  });
+  sort.addEventListener("change", () => {
+    state.sort = sort.value === "name" || sort.value === "recent" ? sort.value : "relevance";
+    update("push");
+  });
+  for (const button of resetButtons) {
+    button.addEventListener("click", () => {
+      state = { ...defaultCatalogState };
+      syncControls();
+      update("push");
+      search.focus();
+    });
+  }
+  window.addEventListener("popstate", () => {
+    state = readCatalogState(new URLSearchParams(window.location.search), types, categories);
+    syncControls();
     render();
   });
-
-  sort?.addEventListener("change", applySort);
-
-  applySort();
+  syncControls();
   render();
 </script>

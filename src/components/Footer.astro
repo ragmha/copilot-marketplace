@@ -1,10 +1,15 @@
 ---
+import { branding, marketplaceRepo, pluginGuideHref } from "../lib/marketplace";
 ---
 
 <footer class="mt-auto border-t border-border">
   <div
-    class="mx-auto w-full max-w-5xl px-6 py-8 text-center text-xs text-muted-foreground"
+    class="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-xs text-muted-foreground"
   >
-    Internal use &middot; built on GitHub Copilot plugins
+    <span>{branding.organization} &middot; {branding.title}</span>
+    <div class="flex flex-wrap gap-x-5 gap-y-3">
+      <a href={pluginGuideHref} class="hover:text-foreground">What is a plugin?</a>
+      <a href={`https://github.com/${marketplaceRepo}`} class="hover:text-foreground">Built on GitHub Copilot plugins</a>
+    </div>
   </div>
 </footer>

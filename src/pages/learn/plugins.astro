@@ -1,0 +1,128 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import Anatomy from "../../components/Anatomy.astro";
+import { branding, marketplaceHome } from "../../lib/marketplace";
+
+const portableFiles = [
+  { path: "plugin.json", description: "Required manifest: $schema and name. The plugin's own version is optional." },
+  { path: "skills/<name>/SKILL.md", description: "Optional Agent Skills, with supporting scripts, references, and assets." },
+  { path: "mcp.json", description: "Optional MCP connections. The portable filename has no leading dot." },
+];
+
+const portableManifest = JSON.stringify({
+  $schema: "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  name: "starter-tools",
+}, null, 2);
+---
+
+<Layout title={`What is a plugin? · ${branding.title}`} description="Understand Copilot plugins, the portable Agent Plugins standard, and how to choose and install packages.">
+  <Header />
+  <main>
+    <section class="mx-auto w-full max-w-6xl px-6 pt-8 pb-6">
+      <nav aria-label="Breadcrumb" class="text-xs text-muted-foreground">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a href={marketplaceHome} class="hover:text-foreground">Marketplace</a></li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page">What is a plugin?</li>
+        </ol>
+      </nav>
+      <h1 class="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">What is a plugin?</h1>
+    </section>
+
+    <Anatomy />
+
+    <section class="mx-auto w-full max-w-6xl px-6 pb-16">
+      <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+        A plugin bundles reusable skills, agents, commands, and tool connections into one install.
+      </p>
+
+      <section aria-labelledby="portable-standard-heading" class="mt-8">
+        <h2 id="portable-standard-heading" class="text-xl font-bold tracking-tight">Portable Agent Plugins</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          The vendor-neutral <a href="https://agent-plugins.org/specification" class="text-foreground underline underline-offset-4 hover:text-primary">Agent Plugins 1.0.0 standard</a>
+          defines a portable core for compatible clients: skills and MCP servers.
+          Client-specific capabilities are not portable v1 components.
+        </p>
+        <dl class="mt-4 grid gap-3 sm:grid-cols-3">
+          {portableFiles.map((file) => (
+            <div class="rounded-lg border border-border bg-card p-4">
+              <dt class="break-words text-xs font-bold"><code>{file.path}</code></dt>
+              <dd class="mt-2 text-xs leading-relaxed text-muted-foreground">{file.description}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <details id="portable-format-details" class="mt-4 rounded-lg border border-border">
+          <summary class="cursor-pointer rounded-lg px-4 py-3 text-sm font-bold hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring">
+            Format details and compatibility
+          </summary>
+          <div class="border-t border-border p-4">
+            <h3 class="text-sm font-bold">Minimal portable manifest</h3>
+            <pre id="portable-manifest" class="mt-3 overflow-x-auto rounded-md bg-muted p-4 text-xs leading-relaxed"><code>{portableManifest}</code></pre>
+            <dl class="mt-5 space-y-4 text-sm leading-relaxed">
+              <div>
+                <dt class="font-bold">Fixed discovery</dt>
+                <dd class="mt-1 text-muted-foreground">
+                  The manifest's <code>$schema</code> selects the format version.
+                  Clients discover skills in immediate children of <code>skills/</code>
+                  and MCP servers in root <code>mcp.json</code>; the manifest cannot relocate them.
+                </dd>
+              </div>
+              <div>
+                <dt class="font-bold">MCP transports and data</dt>
+                <dd class="mt-1 text-muted-foreground">
+                  MCP configuration requires its own <code>$schema</code> and <code>mcpServers</code>.
+                  Transports are <code>stdio</code>, <code>streamable-http</code>, and deprecated,
+                  optional <code>sse</code>. Local servers receive <code>PLUGIN_ROOT</code>
+                  for package files and <code>PLUGIN_DATA</code> for persistent writable data.
+                </dd>
+              </div>
+              <div>
+                <dt class="font-bold">Client extensions</dt>
+                <dd class="mt-1 text-muted-foreground">
+                  Client-owned data belongs under <code>extensions</code> in the manifest;
+                  files use a matching reverse-domain folder, such as <code>com.example.client/</code>.
+                  Agents, commands, hooks, and LSP are outside the portable core.
+                  Clients ignore extension namespaces they do not implement.
+                </dd>
+              </div>
+              <div>
+                <dt class="font-bold">Package boundaries</dt>
+                <dd class="mt-1 text-muted-foreground">
+                  Plugin-relative path fields start with <code>./</code> and must stay inside
+                  the plugin root, including resolved symlinks. This is not a subprocess sandbox.
+                  Keep credentials out of package files.
+                </dd>
+              </div>
+              <div>
+                <dt class="font-bold">Client-managed installation</dt>
+                <dd class="mt-1 text-muted-foreground">
+                  Distribution, installation, updates, authentication, and permissions remain
+                  client-managed. Copilot-native formats may use different manifests or
+                  <code>.mcp.json</code>; a marketplace listing does not imply conformance to this standard.
+                </dd>
+              </div>
+            </dl>
+            <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+              <a href="https://agent-plugins.org/plugin-authors/build-an-agent-plugin" class="underline underline-offset-4 hover:text-primary">Build a portable plugin</a>
+              <a href="https://agent-plugins.org/schemas" class="underline underline-offset-4 hover:text-primary">Canonical JSON schemas</a>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <h2 class="mt-8 text-xl font-bold tracking-tight">Before you install</h2>
+      <ul class="mt-3 max-w-3xl list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
+        <li>Open the plugin's setup guide for APM (package manager), Copilot CLI, or VS Code. Support varies by client.</li>
+        <li>Review the publisher, source, prerequisites, and permissions. Follow your organization's approval policy; a listing is not a security certification.</li>
+      </ul>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href={`${marketplaceHome}#catalog`} class="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring">Browse capabilities</a>
+        <a href={`${marketplaceHome}#quickstart`} class="inline-flex min-h-11 items-center rounded-md border border-border bg-card px-4 text-sm hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring">Add this marketplace</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
