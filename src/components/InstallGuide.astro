@@ -1,153 +1,105 @@
 ---
 import { installGuidesFor } from "../lib/marketplace";
 
-interface Props {
-  plugin: string;
-}
-
+type Props = { plugin?: string };
 const { plugin } = Astro.props;
 const installGuides = installGuidesFor(plugin);
+const icons = {
+  apm: "M8 1.5 14 5v6l-6 3.5L2 11V5L8 1.5ZM2 5l6 3.5L14 5M8 8.5v6",
+  cli: "m2 3 5 5-5 5m7 0h5",
+  vscode: "m5 4-4 4 4 4m6-8 4 4-4 4M9 2 7 14",
+};
 ---
 
-<section id="install" class="scroll-mt-20">
-  <h2 class="text-sm font-bold tracking-tight">Install {plugin}</h2>
+<section id="install" class="scroll-mt-40 lg:scroll-mt-24">
+  <h2 class="text-xl font-bold tracking-tight">{plugin ? `Install ${plugin}` : "Connect your tools"}</h2>
   <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
-    Pick your client and copy the command.
+    Choose an installation method, then follow its setup instructions.
   </p>
-
-  <div class="mt-5 rounded-lg border border-border bg-card p-5">
-    <label for="install-client" class="text-[11px] text-muted-foreground">Client</label>
-
-    <div class="relative mt-1.5">
-      <select
-        id="install-client"
-        class="w-full appearance-none rounded-md border border-border bg-background py-2 pr-9 pl-3 text-sm transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-      >
-        {installGuides.map((guide) => <option value={guide.id}>{guide.label}</option>)}
-      </select>
-
-      <svg
-        class="pointer-events-none absolute top-1/2 right-3 size-3.5 -translate-y-1/2 text-muted-foreground"
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        aria-hidden="true"
-      >
-        <path d="m4 6 4 4 4-4" stroke-linecap="round" stroke-linejoin="round"></path>
-      </svg>
-    </div>
-
-    {
-      installGuides.map((guide, index) => (
-        <div data-panel={guide.id} hidden={index !== 0}>
-          {guide.primary ? (
-            <>
-              <p class="mt-4 text-[11px] text-muted-foreground">{guide.primary.label}</p>
-
-              <button
-                type="button"
-                data-copy-code
-                class="group mt-1.5 flex w-full items-start gap-3 rounded-md border border-border bg-background px-3 py-2.5 text-left transition-colors hover:bg-accent"
-              >
-                <code class="min-w-0 flex-1 overflow-x-auto text-xs whitespace-pre">
-                  {guide.primary.code}
-                </code>
-                <span class="shrink-0 text-[11px] text-muted-foreground transition-colors group-hover:text-foreground">
-                  copy
-                </span>
-              </button>
-            </>
-          ) : (
-            <p class="mt-4 text-xs leading-relaxed text-muted-foreground">{guide.summary}</p>
-          )}
-
-          <details class="group mt-4 border-t border-border pt-4">
-            <summary class="flex cursor-pointer list-none items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
-              <svg
-                class="size-3 transition-transform group-open:rotate-90"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                aria-hidden="true"
-              >
-                <path d="m6 4 4 4-4 4" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              Full setup for {guide.label}
-            </summary>
-
-            <ol class="mt-4 space-y-4">
-              {guide.steps.map((step, stepIndex) => (
-                <li class="grid grid-cols-[1.5rem_1fr] gap-x-3">
-                  <span class="text-xs text-muted-foreground tabular-nums" aria-hidden="true">
-                    {String(stepIndex + 1).padStart(2, "0")}
-                  </span>
-
-                  <div class="min-w-0">
-                    <p class="text-sm leading-relaxed">{step.text}</p>
-
-                    {step.code && (
-                      <button
-                        type="button"
-                        data-copy-code
-                        class="group/code mt-2 flex w-full items-start gap-3 rounded-md border border-border bg-background px-3 py-2.5 text-left transition-colors hover:bg-accent"
-                      >
-                        <code class="min-w-0 flex-1 overflow-x-auto text-xs whitespace-pre">
-                          {step.code}
-                        </code>
-                        <span class="shrink-0 text-[11px] text-muted-foreground transition-colors group-hover/code:text-foreground">
-                          copy
-                        </span>
-                      </button>
-                    )}
-
-                    {step.caption && (
-                      <p class="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                        {step.caption}
-                      </p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </details>
-        </div>
-      ))
-    }
-
-    <p
-      id="install-copy-status"
-      role="status"
-      aria-live="polite"
-      class="mt-3 min-h-4 text-xs text-primary"
-    >
-    </p>
+  <div role="tablist" aria-label="Installation method" class="mt-6 flex flex-wrap gap-2">
+    {installGuides.map((guide, index) => (
+      <button type="button" role="tab" id={`install-tab-${guide.id}`} data-install-tab={guide.id} aria-controls={`install-panel-${guide.id}`} aria-selected={index === 0 ? "true" : "false"} tabindex={index === 0 ? 0 : -1} class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-bold text-foreground transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring aria-selected:border-primary aria-selected:bg-primary aria-selected:text-primary-foreground">
+        <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={icons[guide.id]}></path></svg>
+        {guide.label}
+      </button>
+    ))}
   </div>
+
+  {installGuides.map((guide, index) => (
+    <div id={`install-panel-${guide.id}`} data-panel={guide.id} role="tabpanel" aria-labelledby={`install-tab-${guide.id}`} tabindex="0" hidden={index !== 0} class="mt-5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
+      <div class="rounded-lg border border-primary/20 bg-primary/5 p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-lg font-bold">{guide.label}</h3>
+          <span class="rounded-full border border-primary/20 bg-card px-3 py-1 text-xs text-primary">{guide.badge}</span>
+        </div>
+        <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{guide.summary}</p>
+      </div>
+      <div class="mt-5 overflow-hidden rounded-lg border border-border bg-card">
+        <div class="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+          <p class="min-w-0 text-xs font-bold break-words">{guide.primary.label}</p>
+          <button type="button" data-copy-target={`install-code-${guide.id}`} aria-label={`Copy ${guide.label} instructions`} class="min-h-9 shrink-0 rounded-md border border-border px-3 text-xs hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring">Copy</button>
+        </div>
+        <pre class="overflow-x-auto bg-muted/35 p-4 text-xs leading-relaxed sm:text-sm"><code id={`install-code-${guide.id}`}>{guide.primary.code}</code></pre>
+      </div>
+      <ol class="mt-5 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-muted-foreground">
+        {guide.steps.map((step) => (
+          <li>
+            {step.text}
+            {step.code && <pre class="mt-2 overflow-x-auto rounded-md border border-border bg-card p-3 text-xs text-foreground"><code>{step.code}</code></pre>}
+            {step.caption && <p class="mt-1 text-xs">{step.caption}</p>}
+          </li>
+        ))}
+      </ol>
+      <a href={guide.docs.href} class="mt-4 inline-block text-xs text-primary underline underline-offset-4">{guide.docs.label}</a>
+    </div>
+  ))}
+  <p id="install-copy-status" role="status" aria-live="polite" class="mt-3 min-h-4 text-xs text-primary"></p>
 </section>
 
 <script>
-  const select = document.querySelector<HTMLSelectElement>("#install-client");
+  const root = document.getElementById("install");
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-install-tab]"));
   const panels = Array.from(document.querySelectorAll<HTMLElement>("#install [data-panel]"));
   const status = document.getElementById("install-copy-status");
-
-  select?.addEventListener("change", () => {
-    for (const panel of panels) {
-      panel.hidden = panel.dataset.panel !== select.value;
+  if (!root || !status || tabs.length !== 3 || panels.length !== 3) {
+    throw new Error("The installation guide is missing its three methods.");
+  }
+  const activate = (tab: HTMLButtonElement) => {
+    for (const other of tabs) {
+      const selected = other === tab;
+      other.setAttribute("aria-selected", String(selected));
+      other.tabIndex = selected ? 0 : -1;
     }
-    if (status) status.textContent = "";
-  });
-
-  // The command lives in the markup, so there is only one copy of each string.
-  for (const button of document.querySelectorAll<HTMLElement>("#install [data-copy-code]")) {
+    for (const panel of panels) panel.hidden = panel.dataset.panel !== tab.dataset.installTab;
+    status.textContent = "";
+  };
+  for (const [index, tab] of tabs.entries()) {
+    tab.addEventListener("click", () => activate(tab));
+    tab.addEventListener("keydown", (event) => {
+      let next: number;
+      if (event.key === "ArrowRight") next = (index + 1) % tabs.length;
+      else if (event.key === "ArrowLeft") next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      activate(tabs[next]);
+      tabs[next].focus();
+    });
+  }
+  for (const button of root.querySelectorAll<HTMLButtonElement>("[data-copy-target]")) {
     button.addEventListener("click", async () => {
-      const text = button.querySelector("code")?.textContent?.trim();
-      if (!text || !status) return;
+      const target = button.dataset.copyTarget;
+      const code = target ? document.getElementById(target) : null;
+      if (!code) {
+        status.textContent = "Copy failed: instructions are missing. Reload this page.";
+        return;
+      }
       try {
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(code.textContent ?? "");
         status.textContent = "Copied.";
       } catch {
-        status.textContent = "Copy failed. Select the text and copy it manually.";
+        status.textContent = "Copy failed. Select the visible instructions and copy them manually.";
       }
     });
   }

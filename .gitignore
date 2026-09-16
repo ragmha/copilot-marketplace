@@ -4,3 +4,6 @@ dist/
 .DS_Store
 .impeccable/
 *.log
+test-results/
+playwright-report/
+.azure/

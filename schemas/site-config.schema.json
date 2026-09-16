@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/your-org/copilot-marketplace/schemas/site-config.schema.json",
+  "title": "Marketplace identity and site branding",
+  "type": "object",
+  "required": ["name", "repository", "version", "owner", "branding"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Use a kebab-case marketplace registration key, for example acme-tools.",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "not": { "pattern": "\\s" },
+      "maxLength": 64
+    },
+    "repository": {
+      "type": "string",
+      "description": "Use a GitHub owner/repository, for example acme/copilot-marketplace, not a URL.",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/(?!\\.{1,2}$)[A-Za-z0-9_.-]{1,100}$",
+      "not": { "pattern": "\\s" }
+    },
+    "version": {
+      "type": "string",
+      "description": "Use a semantic version, for example 1.0.0 or 2.0.0-rc.1.",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+      "not": { "pattern": "\\s" }
+    },
+    "owner": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "\\S" },
+        "email": { "type": "string", "format": "email" }
+      }
+    },
+    "branding": {
+      "type": "object",
+      "required": ["organization", "title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "organization": { "type": "string", "pattern": "\\S" },
+        "title": { "type": "string", "pattern": "\\S" },
+        "description": { "type": "string", "pattern": "\\S", "maxLength": 1024 },
+        "logo": { "$ref": "#/$defs/logoPath" },
+        "logoDark": { "$ref": "#/$defs/logoPath" }
+      }
+    }
+  },
+  "$defs": {
+    "logoPath": {
+      "type": "string",
+      "description": "Use an existing SVG, PNG, JPEG or WebP file relative to public/, such as branding/acme.svg. Use URL-safe unencoded names (letters, digits, dot, underscore, hyphen, tilde); no schemes, absolute paths, backslashes, query/hash, percent encoding or dot traversal segments.",
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))(?:[A-Za-z0-9._~-]+/)*[A-Za-z0-9._~-]+\\.(?:[sS][vV][gG]|[pP][nN][gG]|[jJ][pP][eE]?[gG]|[wW][eE][bB][pP])$",
+      "not": { "pattern": "\\s" }
+    }
+  }
+}

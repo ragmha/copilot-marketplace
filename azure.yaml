@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://aka.ms/azure-dev-cli-app-schema.json
+name: copilot-marketplace
+infra:
+  provider: bicep
+  path: infra
+  module: main
+# azd provisions infrastructure. The existing GitHub workflow builds with Bun
+# and deploys dist; there is no azd JavaScript service that could restore with npm.
