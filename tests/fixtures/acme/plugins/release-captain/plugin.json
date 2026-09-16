@@ -1,0 +1,13 @@
+{
+  "name": "release-captain",
+  "description": "Prepare release notes for Acme engineering teams.",
+  "version": "2.4.0",
+  "author": { "name": "Acme Engineering" },
+  "repository": "https://github.com/acme/release-captain",
+  "category": "Delivery",
+  "directory": {
+    "type": "plugin",
+    "updated": "2026-09-15",
+    "contains": { "skills": 2, "agents": 1 }
+  }
+}

@@ -7,9 +7,13 @@ import InstallGuide from "../../components/InstallGuide.astro";
 import catalog from "../../../public/marketplace.json";
 import {
   describeContents,
+  branding,
   describeUpdated,
   installCommand,
+  marketplaceHome,
   marketplaceRepo,
+  pluginGuideHref,
+  pluginSourceHref,
   normalize,
   typeLabel,
   type Marketplace,
@@ -45,7 +49,7 @@ const { plugin, related } = Astro.props;
 const contents = describeContents(plugin.contains);
 const command = installCommand(plugin.name);
 const label = typeLabel(plugin.type);
-const home = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const home = marketplaceHome;
 
 const facts = [
   { term: "Type", value: plugin.type },
@@ -64,7 +68,7 @@ const facts = [
 ];
 ---
 
-<Layout title={`${plugin.name} · Copilot Marketplace`} description={plugin.description}>
+<Layout title={`${plugin.name} · ${branding.title}`} description={plugin.description}>
   <Header />
 
   <main class="mx-auto w-full max-w-5xl px-6 pt-12 pb-20">
@@ -73,7 +77,7 @@ const facts = [
         <li><a href={home} class="transition-colors hover:text-foreground">Marketplace</a></li>
         <li aria-hidden="true">/</li>
         <li>
-          <a href={`${home}#catalog`} class="transition-colors hover:text-foreground">{label}</a>
+          <a href={`${home}?type=${plugin.type}#catalog`} class="transition-colors hover:text-foreground">{label}</a>
         </li>
         <li aria-hidden="true">/</li>
         <li class="text-foreground" aria-current="page">{plugin.name}</li>
@@ -96,8 +100,8 @@ const facts = [
       {plugin.featured && <span class="text-primary">featured</span>}
     </p>
 
-    <div class="mt-8 grid gap-10 border-t border-border pt-8 lg:grid-cols-[1fr_20rem]">
-      <div>
+    <div class="mt-8 grid grid-cols-1 gap-10 border-t border-border pt-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div class="min-w-0">
         <p class="text-sm leading-relaxed">{plugin.description}</p>
 
         {
@@ -118,11 +122,36 @@ const facts = [
           )
         }
 
-        <h2 class="mt-8 text-sm font-bold tracking-tight">Where it runs</h2>
+        {plugin.components && (
+          <div class="mt-6 space-y-4">
+            {(["skill", "agent", "hook", "mcp-server"] as const).map((kind) => {
+              const components = plugin.components?.filter((component) => component.kind === kind) ?? [];
+              return components.length > 0 && (
+                <details open={kind === "skill"} class="rounded-lg border border-border bg-card p-4">
+                  <summary class="cursor-pointer text-sm font-bold">{typeLabel(kind)} ({components.length})</summary>
+                  <ul class="mt-3 space-y-2 text-xs">
+                    {components.map((component) => (
+                      <li><a href={pluginSourceHref(plugin, component)} class="break-words text-primary underline underline-offset-4">{component.name}</a></li>
+                    ))}
+                  </ul>
+                </details>
+              );
+            })}
+          </div>
+        )}
+        {plugin.notes && (
+          <section class="mt-8 rounded-lg border border-border bg-card p-4">
+            <h2 class="text-sm font-bold">Before installing</h2>
+            <ul class="mt-3 list-disc space-y-3 pl-4 text-xs leading-relaxed text-muted-foreground">
+              {plugin.notes.map((note) => <li>{note}</li>)}
+            </ul>
+          </section>
+        )}
+        <h2 class="mt-8 text-sm font-bold tracking-tight">Installation methods</h2>
         <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Installing this loads its components into the Copilot CLI, the Copilot app, VS Code,
-          and the Copilot cloud agent. See <a
-            href={`${home}#anatomy`}
+          Choose APM, Copilot CLI, or VS Code below. Component support and prerequisites
+          vary by package and installation method. See <a
+            href={pluginGuideHref}
             class="text-foreground underline underline-offset-4">what a plugin is</a
           > for how the pieces fit together.
         </p>
@@ -132,7 +161,7 @@ const facts = [
         </div>
       </div>
 
-      <aside class="lg:sticky lg:top-20 lg:self-start">
+      <aside class="min-w-0 lg:sticky lg:top-20 lg:self-start">
         <div class="rounded-lg border border-border bg-card p-5">
           <h2 class="text-[11px] tracking-wide text-muted-foreground uppercase">Install</h2>
 
@@ -151,7 +180,7 @@ const facts = [
 
           <div class="mt-2 flex gap-2">
             <a
-              href={plugin.repository}
+              href={pluginSourceHref(plugin)}
               class="flex-1 rounded-md border border-border px-3 py-2 text-center text-xs transition-colors hover:bg-accent"
             >
               Source

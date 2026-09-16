@@ -6,6 +6,9 @@ import {
   MarkerType,
   Position,
   ReactFlow,
+  useNodesInitialized,
+  useReactFlow,
+  useStore,
   type Edge,
   type Node,
   type NodeProps,
@@ -53,6 +56,22 @@ function Boundary({ data }: NodeProps & { data: BoxData }) {
 }
 
 const nodeTypes = { box: Box, boundary: Boundary } as never;
+const fitViewOptions = { padding: 0.06, minZoom: 0.2, maxZoom: 1 };
+
+function FitOnResize() {
+  const { fitView } = useReactFlow();
+  const nodesInitialized = useNodesInitialized();
+  const width = useStore((state) => state.width);
+  const height = useStore((state) => state.height);
+
+  useEffect(() => {
+    if (nodesInitialized && width > 0 && height > 0) {
+      void fitView(fitViewOptions);
+    }
+  }, [fitView, nodesInitialized, width, height]);
+
+  return null;
+}
 
 // Laid out to fit a ~1040 x 372 canvas so the diagram reads at 1:1 on a
 // desktop viewport instead of relying on zoom.
@@ -96,8 +115,8 @@ const nodes: Node[] = [
     width: GROUP_W,
     height: 372,
     data: {
-      title: "ONE PLUGIN",
-      subtitle: "A directory that ships as a unit",
+      title: "COPILOT-STYLE PLUGIN",
+      subtitle: "A bundle in the client's own format",
     } satisfies BoxData,
   },
   {
@@ -190,14 +209,14 @@ export default function PluginAnatomy() {
   return (
     <div className="h-[420px] w-full">
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        defaultNodes={nodes}
+        defaultEdges={edges}
         nodeTypes={nodeTypes}
         colorMode={colorMode}
         fitView
-        fitViewOptions={{ padding: 0.06 }}
-        minZoom={0.3}
-        maxZoom={1}
+        fitViewOptions={fitViewOptions}
+        minZoom={fitViewOptions.minZoom}
+        maxZoom={fitViewOptions.maxZoom}
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={false}
@@ -208,6 +227,7 @@ export default function PluginAnatomy() {
         preventScrolling={false}
         proOptions={{ hideAttribution: true }}
       >
+        <FitOnResize />
         <Background variant={BackgroundVariant.Dots} gap={18} size={1} />
       </ReactFlow>
     </div>

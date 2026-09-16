@@ -6,6 +6,11 @@ tooling produces `.github/plugin/marketplace.json` and `public/marketplace.json`
 Your plugin's actual content — skills, agents, MCP servers, prompts — stays in
 your own repository. This repo stores registry records only.
 
+For a no-Git submission, use **Submit a skill** on the website. You can provide a
+repository link, write instructions, or locally import a file to prepare a
+GitHub issue. See [submissions.md](submissions.md); a maintainer reviews and
+packages drafts before adding registry records.
+
 ## Before you start
 
 Your plugin repository needs to be:
@@ -48,14 +53,23 @@ The directory name **must** equal the `name` field.
 | `version`            | yes      | Semver                                                       |
 | `author.name`        | yes      | Owning team or person                                        |
 | `repository`         | yes      | The plugin's own repository URL                              |
+| `source`             | no       | Explicit GitHub `repo`, package `path`, and optional `ref`/`sha` |
 | `category`           | yes      | Reuse an existing category where possible                    |
-| `directory.type`     | yes      | `skill`, `agent`, `mcp-server`, `prompt`, or `bundle`        |
+| `directory.type`     | yes      | `plugin`, `skill`, `agent`, `prompt`, `hook`, `mcp-server`, or `extension` |
 | `directory.updated`  | yes      | `YYYY-MM-DD`                                                 |
-| `directory.featured` | no       | Promotes it to the homepage picks                            |
-| `directory.contains` | no       | Component counts: `skills`, `agents`, `mcpServers`, `prompts`|
+| `directory.featured` | no       | Marks the entry as featured                                 |
+| `directory.contains` | no       | Component counts: `skills`, `agents`, `hooks`, `mcpServers`   |
+| `directory.components` | no     | Complete named inventory with kind and source-relative path |
+| `directory.notes`    | no       | Source-verified prerequisites and installation caveats      |
 
 Everything under `directory` is a local extension used only by this website.
 Copilot clients ignore it.
+
+For a package inside a monorepo, set `source` to its actual directory rather
+than pointing every entry at the repository root. A full 40-character `sha`
+pins the fetched revision; clients using `ref` can carry the same commit there.
+Component inventory counts must match `directory.contains`. See the
+[Fabric collection](fabric-catalog.md) for a complete example.
 
 ### 2. Regenerate and validate
 

@@ -2,18 +2,14 @@ name: Validate marketplace
 
 on:
   push:
-    branches: [master]
   pull_request:
-    paths:
-      - "plugins/**"
-      - "schemas/**"
-      - "scripts/**"
-      - ".github/plugin/**"
-      - "public/marketplace.json"
-      - ".github/workflows/validate-marketplace.yml"
+
+permissions:
+  contents: read
 
 jobs:
   validate:
+    if: github.event_name == 'pull_request' || github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,5 +26,26 @@ jobs:
       - name: Ensure the catalog is regenerated
         run: bun run marketplace:check
 
-      - name: Build the site
+      - name: Test catalog search and URL state
+        run: bun run test
+
+      - name: Check types and templates
+        run: bun run check
+
+      - name: Build for root hosting
         run: bun run build
+        env:
+          BASE_PATH: /
+          PUBLIC_MARKETPLACE_REPO: ${{ github.repository }}
+
+      - name: Build for repository subpath hosting
+        run: bun run build
+        env:
+          BASE_PATH: /marketplace-smoke/
+          PUBLIC_MARKETPLACE_REPO: ${{ github.repository }}
+
+      - name: Install browser for template acceptance tests
+        run: bun run test:template:install --with-deps
+
+      - name: Verify Acme adoption on both hosts
+        run: bun run test:template

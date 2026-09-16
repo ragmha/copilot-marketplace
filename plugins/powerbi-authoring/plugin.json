@@ -1,0 +1,37 @@
+{
+  "$schema": "../../schemas/plugin.schema.json",
+  "name": "powerbi-authoring",
+  "description": "Plan, design, author, and manage Power BI reports and semantic models using PBIP workflows.",
+  "version": "0.3.16",
+  "author": { "name": "Microsoft" },
+  "repository": "https://github.com/microsoft/skills-for-fabric",
+  "source": {
+    "source": "github",
+    "repo": "microsoft/skills-for-fabric",
+    "path": "plugins/powerbi-authoring",
+    "ref": "24cc0d296e5e8523cc6a92e1342bc1791d7deb85",
+    "sha": "24cc0d296e5e8523cc6a92e1342bc1791d7deb85"
+  },
+  "homepage": "https://github.com/microsoft/skills-for-fabric",
+  "license": "MIT",
+  "category": "Microsoft Fabric",
+  "keywords": ["fabric", "powerbi", "semantic-model", "pbip", "pbir", "report"],
+  "directory": {
+    "type": "plugin",
+    "updated": "2026-09-15",
+    "contains": { "skills": 5, "mcpServers": 1 },
+    "components": [
+      { "name": "powerbi-report-authoring", "kind": "skill", "path": "skills/powerbi-report-authoring/SKILL.md" },
+      { "name": "powerbi-report-design", "kind": "skill", "path": "skills/powerbi-report-design/SKILL.md" },
+      { "name": "powerbi-report-management", "kind": "skill", "path": "skills/powerbi-report-management/SKILL.md" },
+      { "name": "powerbi-report-planning", "kind": "skill", "path": "skills/powerbi-report-planning/SKILL.md" },
+      { "name": "semantic-model-authoring", "kind": "skill", "path": "skills/semantic-model-authoring/SKILL.md" },
+      { "name": "powerbi-modeling-mcp", "kind": "mcp-server", "path": ".mcp.json" }
+    ],
+    "notes": [
+      "Installs the Power BI authoring bundle as a unit, separate from the main Fabric bundle.",
+      "The bundled modeling MCP server requires Node.js and npx. Its upstream configuration launches @microsoft/powerbi-modeling-mcp@latest; the repository commit pin does not pin that runtime dependency.",
+      "Review the upstream setup instructions and authenticate for the Power BI or Fabric resources you intend to use."
+    ]
+  }
+}

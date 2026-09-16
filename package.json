@@ -13,6 +13,11 @@
     "build": "bun --bun astro build",
     "preview": "bun --bun astro preview",
     "check": "bun --bun astro check",
+    "test": "bun test tests",
+    "setup": "bun scripts/setup.mjs",
+    "setup:azure": "node scripts/setup-azure.mjs",
+    "test:template": "node scripts/test-template.mjs",
+    "test:template:install": "playwright install chromium",
     "validate": "bun scripts/validate.mjs",
     "marketplace": "bun scripts/generate-marketplace.mjs",
     "marketplace:check": "bun scripts/generate-marketplace.mjs --check"
@@ -24,10 +29,13 @@
     "astro": "^5.14.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.13",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "ajv": "^8.20.0",

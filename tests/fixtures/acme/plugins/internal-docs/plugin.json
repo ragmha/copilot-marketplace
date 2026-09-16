@@ -1,0 +1,13 @@
+{
+  "name": "internal-docs",
+  "description": "Search Acme runbooks and onboarding guides.",
+  "version": "1.2.0",
+  "author": { "name": "Acme Platform" },
+  "repository": "https://github.com/acme/internal-docs",
+  "category": "Onboarding",
+  "directory": {
+    "type": "mcp-server",
+    "updated": "2026-09-14",
+    "contains": { "mcpServers": 1 }
+  }
+}

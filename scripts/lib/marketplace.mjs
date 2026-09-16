@@ -1,49 +1,45 @@
 // Shared helpers for the marketplace tooling (validation + generation).
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { loadConfig, readJson, repoRoot, validateConfig } from "./config.mjs";
 
-const here = dirname(fileURLToPath(import.meta.url));
-export const repoRoot = resolve(here, "..", "..");
+export { readJson, repoRoot } from "./config.mjs";
 
-export const paths = {
-  pluginSchema: join(repoRoot, "schemas", "plugin.schema.json"),
-  marketplaceSchema: join(repoRoot, "schemas", "marketplace.schema.json"),
-  pluginsDir: join(repoRoot, "plugins"),
-  // The canonical catalog Copilot clients read from the repository.
-  marketplaceFile: join(repoRoot, ".github", "plugin", "marketplace.json"),
-  // The same document, served by the site so it also has a public URL.
-  siteCopy: join(repoRoot, "public", "marketplace.json"),
-};
-
-export function readJson(path) {
-  const raw = readFileSync(path, "utf8");
-  try {
-    return JSON.parse(raw);
-  } catch (error) {
-    throw new Error(`Invalid JSON in ${path}: ${error.message}`);
-  }
+export function pathsFor(rootDir = repoRoot) {
+  return {
+    configFile: join(rootDir, "marketplace.config.json"),
+    pluginSchema: join(rootDir, "schemas", "plugin.schema.json"),
+    marketplaceSchema: join(rootDir, "schemas", "marketplace.schema.json"),
+    pluginsDir: join(rootDir, "plugins"),
+    // The canonical catalog Copilot clients read from the repository.
+    marketplaceFile: join(rootDir, ".github", "plugin", "marketplace.json"),
+    // The same document, served by the site so it also has a public URL.
+    siteCopy: join(rootDir, "public", "marketplace.json"),
+  };
 }
 
-/** Discover every `plugins/<name>/plugin.json`. */
-export function discoverPluginDirs() {
-  if (!existsSync(paths.pluginsDir)) return [];
+export const paths = pathsFor();
 
-  return readdirSync(paths.pluginsDir)
+/** Discover every `plugins/<name>/plugin.json`. */
+export function discoverPluginDirs(rootDir = repoRoot) {
+  const { pluginsDir } = pathsFor(rootDir);
+  if (!existsSync(pluginsDir)) return [];
+
+  return readdirSync(pluginsDir)
     .filter((entry) => {
-      const dir = join(paths.pluginsDir, entry);
+      const dir = join(pluginsDir, entry);
       return statSync(dir).isDirectory() && existsSync(join(dir, "plugin.json"));
     })
     .sort()
     .map((slug) => ({
       slug,
-      dir: join(paths.pluginsDir, slug),
-      manifestPath: join(paths.pluginsDir, slug, "plugin.json"),
+      dir: join(pluginsDir, slug),
+      manifestPath: join(pluginsDir, slug, "plugin.json"),
     }));
 }
 
-export function loadPlugins() {
-  return discoverPluginDirs().map((plugin) => ({
+export function loadPlugins(rootDir = repoRoot) {
+  return discoverPluginDirs(rootDir).map((plugin) => ({
     ...plugin,
     manifest: readJson(plugin.manifestPath),
   }));
@@ -68,10 +64,35 @@ const ENTRY_FIELDS = [
  * that repository rather than a path inside this one.
  */
 export function sourceFor(manifest) {
+  if (manifest.source) return { ...manifest.source };
   const match = /^https:\/\/github\.com\/([^/]+\/[^/]+?)(?:\.git)?\/?$/.exec(
     manifest.repository ?? "",
   );
   return match ? { source: "github", repo: match[1] } : manifest.repository;
+}
+
+export function componentIssues(manifest) {
+  const components = manifest.directory?.components;
+  if (!components) return [];
+  const errors = [];
+  const keys = { skill: "skills", agent: "agents", hook: "hooks", "mcp-server": "mcpServers" };
+  const source = sourceFor(manifest);
+  if (typeof source !== "object" || source.source !== "github") {
+    errors.push("Component inventories require a GitHub source.");
+  }
+  const seen = new Set();
+  for (const component of components) {
+    const key = `${component.kind}:${component.name}`;
+    if (seen.has(key)) errors.push(`Duplicate component ${key}.`);
+    seen.add(key);
+  }
+  for (const [kind, key] of Object.entries(keys)) {
+    const actual = components.filter((component) => component.kind === kind).length;
+    if (actual !== (manifest.directory.contains?.[key] ?? 0)) {
+      errors.push(`directory.contains.${key} does not match the ${actual} listed ${kind} component(s).`);
+    }
+  }
+  return errors;
 }
 
 export function buildEntry(plugin) {
@@ -83,21 +104,36 @@ export function buildEntry(plugin) {
 }
 
 /**
- * Aggregate every plugin manifest into one catalog, preserving the top-level
- * identity from the existing file so the marketplace name stays stable.
+ * Identity belongs to source configuration, never the generated catalog.
+ * Plugin repositories remain independent of the marketplace's organization.
  */
-export function buildMarketplace(existing) {
-  const base = existing ?? {};
+export function buildMarketplace(config, rootDir = repoRoot) {
+  const identity = config === undefined ? loadConfig(rootDir) : validateConfig(config, rootDir);
   return {
-    name: base.name ?? "copilot-marketplace",
-    owner: base.owner ?? { name: "Developer Experience" },
-    ...(base.metadata ? { metadata: base.metadata } : {}),
-    plugins: loadPlugins().map(buildEntry),
+    name: identity.name,
+    owner: { ...identity.owner },
+    metadata: {
+      description: identity.branding.description,
+      version: identity.version,
+      repository: `https://github.com/${identity.repository}`,
+    },
+    plugins: loadPlugins(rootDir).map(buildEntry),
   };
 }
 
-export function loadExistingMarketplace() {
-  return existsSync(paths.marketplaceFile) ? readJson(paths.marketplaceFile) : null;
+export function loadExistingMarketplace(rootDir = repoRoot) {
+  const { marketplaceFile } = pathsFor(rootDir);
+  return existsSync(marketplaceFile) ? readJson(marketplaceFile) : null;
+}
+
+/** Write one prepared catalog identically to both consumers. */
+export function writeMarketplace(marketplace, rootDir = repoRoot) {
+  const { marketplaceFile, siteCopy } = pathsFor(rootDir);
+  const generated = serialize(marketplace);
+  for (const target of [marketplaceFile, siteCopy]) {
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, generated);
+  }
 }
 
 export function serialize(doc) {

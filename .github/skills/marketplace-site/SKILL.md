@@ -14,9 +14,12 @@ src/
   layouts/Layout.astro          <html>, theme bootstrap script, <slot/>
   pages/index.astro             Composition root — section order lives here
   pages/plugins/[slug].astro    getStaticPaths() → one detail page per plugin
+  pages/learn/plugins.astro     Plugin guide; the only page loading the anatomy island
+  pages/submit.astro            Local drafts/imports and GitHub issue-form handoff
   components/*.astro            Everything else
   components/PluginAnatomy.tsx  The only React island (React Flow)
   lib/marketplace.ts            Types, labels, install snippets, href + art helpers
+  lib/catalog.ts                Filtering, relevance ranking, and shareable URL state
   styles/global.css             @theme inline tokens + @layer components
 ```
 
@@ -51,9 +54,20 @@ Data flows one way: `public/marketplace.json` → `normalize()` → flat `Plugin
 ## Things that will bite you
 
 - **`Catalog.astro` filters the DOM, it does not re-render.** Its script reads
-  `data-name`, `data-type`, `data-updated`, and `data-search` off `.plugin-card`
-  elements emitted by `PluginCard.astro`. Change one, change both. Sorting sets
-  `style.order`, which works because the container is a CSS grid.
+  `data-name`, `data-type`, `data-category`, `data-updated`, and `data-search` off
+  `.plugin-card` elements emitted by `PluginCard.astro`. Change one, change both.
+  Sorting moves the existing elements so keyboard and visual order stay in sync.
+  Search spans all types by default; `q`, `type`, `category`, and `sort` preserve
+  the view in the URL. Cards are grouped by category, with empty groups hidden.
+  `MarketplaceSearch.astro` owns the header input; on detail pages its form
+  navigates to the homepage query instead of trying to filter a missing catalog.
+- **Customer branding is configuration.** Import `branding` and `brandLogoHref`
+  from `src/lib/marketplace.ts`. The source is `marketplace.config.json`; never
+  hardcode an adopting company's name, marketplace key, or asset URL in components.
+- **Keep hosting portable.** Use `marketplaceHome` / `pluginHref` for links.
+  `BASE_PATH` controls root vs Pages subpath builds; `PUBLIC_MARKETPLACE_REPO`
+  supplies the adopter's non-secret repository identity. `Quickstart.astro` renders
+  the shared `InstallGuide.astro` tabs directly below the hero, above the catalog.
 - **Install buttons sit inside full-card links.** `InstallToast.astro` is the
   single delegated `[data-install]` handler and calls `preventDefault()`. Add new
   install buttons by emitting `data-install="<command>"`, not a new listener.
@@ -71,8 +85,10 @@ Data flows one way: `public/marketplace.json` → `normalize()` → flat `Plugin
 ## Before you finish
 
 ```sh
+bun run test    # catalog filtering, ranking, and URL state
 bun run check   # astro check
-bun run build   # must stay at 1 index + one page per plugin
+bun run build   # homepage + guide + submission form + one detail page per plugin
+bun run test:template  # isolated Acme builds at root and Pages subpath
 ```
 
 Then load the dev server and confirm in **both** themes: featured cards,

@@ -1,6 +1,6 @@
 ---
 import PluginRow from "./PluginRow.astro";
-import { categoryBlurbs, type Plugin } from "../lib/marketplace";
+import { categoryBlurbs, marketplaceHome, type Plugin } from "../lib/marketplace";
 
 interface Props {
   plugins: Plugin[];
@@ -34,8 +34,7 @@ const collections = [...new Set(plugins.map((plugin) => plugin.category))]
             <h2 class="text-xl font-bold tracking-tight">{collection.category}</h2>
             {collection.total > collection.entries.length && (
               <a
-                href="#catalog"
-                data-jump={collection.category}
+                href={`${marketplaceHome}?category=${encodeURIComponent(collection.category)}#catalog`}
                 class="text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
               >
                 All {collection.total} →
@@ -57,16 +56,3 @@ const collections = [...new Set(plugins.map((plugin) => plugin.category))]
     }
   </div>
 </section>
-
-<script>
-  // "All N →" drops the category into the catalog search so the jump lands on
-  // a filtered view rather than the top of an unfiltered list.
-  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-jump]")) {
-    link.addEventListener("click", () => {
-      const search = document.getElementById("search") as HTMLInputElement | null;
-      if (!search) return;
-      search.value = link.dataset.jump ?? "";
-      search.dispatchEvent(new Event("input", { bubbles: true }));
-    });
-  }
-</script>

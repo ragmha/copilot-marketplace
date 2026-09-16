@@ -1,88 +1,43 @@
 ---
-import { appSettings, cliCommand, cloudSettings } from "../lib/marketplace";
+import { branding, pluginGuideHref } from "../lib/marketplace";
 
-interface Props {
-  count: number;
-}
-
-const { count } = Astro.props;
-
-const alternates = [
-  { key: "app", label: "Copilot app settings" },
-  { key: "cloud", label: "Cloud agent settings" },
-];
+type Props = { count: number; categories: number };
+const { count, categories } = Astro.props;
 ---
 
-<section id="top" class="mx-auto w-full max-w-4xl px-6 pt-24 pb-16 text-center">
-  <h1 class="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-    The internal Copilot plugin directory
-  </h1>
-
-  <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground text-balance">
-    Plugins are reusable capabilities for Copilot. Add the marketplace once, then
-    install any of the {count} plugins your colleagues have published.
-  </p>
-
-  <div id="quickstart" class="mx-auto mt-10 max-w-2xl scroll-mt-24 text-left">
-    <button
-      type="button"
-      data-copy="cli"
-      class="group flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-4 text-left transition-colors hover:bg-accent"
-    >
-      <span class="select-none text-muted-foreground" aria-hidden="true">$</span>
-      <code class="min-w-0 flex-1 truncate text-sm text-card-foreground">{cliCommand}</code>
-      <span
-        class="shrink-0 text-xs text-muted-foreground transition-colors group-hover:text-foreground"
-        >copy</span
-      >
-    </button>
-
-    <div class="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs">
-      {
-        alternates.map((alternate) => (
-          <button
-            type="button"
-            data-copy={alternate.key}
-            class="text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-          >
-            {alternate.label}
-          </button>
-        ))
-      }
+<section id="top" class="bg-hero text-hero-foreground">
+  <div class="mx-auto grid w-full max-w-7xl items-center gap-10 px-5 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1fr_18rem]">
+    <div>
+      <h1 class="max-w-4xl text-3xl leading-tight font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+        Your team's next capability.<br class="hidden sm:block" /> One marketplace away.
+      </h1>
+      <p class="mt-5 max-w-2xl text-sm leading-relaxed text-hero-muted">{branding.description}</p>
+      <p class="mt-3 max-w-2xl text-xs leading-relaxed text-hero-muted">
+        A plugin bundles reusable capabilities for Copilot.
+        <a href={pluginGuideHref} class="text-hero-foreground underline underline-offset-4">Learn how plugins work.</a>
+      </p>
+      <div class="mt-7 flex flex-wrap items-center gap-3">
+        <a href="#catalog" class="inline-flex min-h-11 items-center gap-3 rounded-md bg-hero-accent px-4 text-xs font-bold text-hero hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4">
+          Explore capabilities <span aria-hidden="true">→</span>
+        </a>
+        <a href="#quickstart" class="inline-flex min-h-11 items-center rounded-md border border-hero-muted/40 px-4 text-xs text-hero-foreground hover:bg-hero-foreground/10 focus-visible:outline-2 focus-visible:outline-offset-4">Set up Copilot</a>
+      </div>
+      <p class="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-[11px] text-hero-muted">
+        <span><strong class="text-hero-foreground">{count}</strong> capabilities</span>
+        <span><strong class="text-hero-foreground">{categories}</strong> use cases</span>
+        <span>APM · Copilot CLI · VS Code</span>
+      </p>
     </div>
-
-    <p
-      id="copy-status"
-      role="status"
-      aria-live="polite"
-      class="mt-3 min-h-4 text-center text-xs text-primary"
-    >
-    </p>
+    <svg class="hidden w-full text-hero-muted lg:block" viewBox="0 0 300 220" fill="none" aria-hidden="true">
+      <path d="M66 57 146 105M237 57 161 105M228 177 164 122" stroke="currentColor" stroke-opacity=".35" stroke-width="1.5"></path>
+      <rect x="28" y="24" width="56" height="56" rx="10" fill="var(--hero)" stroke="currentColor" stroke-opacity=".5"></rect>
+      <path d="m50 43-9 9 9 9m12-18 9 9-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <rect x="212" y="26" width="56" height="56" rx="10" fill="var(--hero)" stroke="currentColor" stroke-opacity=".5"></rect>
+      <path d="M230 46h20v18h-20zM235 40h10M235 53h2m6 0h2m-10 5h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      <rect x="208" y="152" width="56" height="56" rx="10" fill="var(--hero)" stroke="currentColor" stroke-opacity=".5"></rect>
+      <path d="M227 168h17v23h-17zM232 174h7m-7 6h7m-7 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+      <rect x="114" y="78" width="76" height="76" rx="24" fill="var(--hero)" stroke="var(--hero-accent)" stroke-width="1.5"></rect>
+      <path d="m152 94 5 16 16 5-16 5-5 16-5-16-16-5 16-5Z" stroke="var(--hero-accent)" stroke-width="2" stroke-linejoin="round"></path>
+    </svg>
   </div>
 </section>
-
-<script
-  is:inline
-  define:vars={{ snippets: { app: appSettings, cloud: cloudSettings, cli: cliCommand } }}
->
-  const labels = {
-    app: "Copilot app settings",
-    cloud: "Cloud agent settings",
-    cli: "Install command",
-  };
-  const status = document.getElementById("copy-status");
-
-  document.querySelectorAll("[data-copy]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const key = button.getAttribute("data-copy");
-      const text = snippets[key];
-      if (!status || !text) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        status.textContent = `${labels[key]} copied.`;
-      } catch {
-        status.textContent = `Copy failed. Use this value manually: ${text}`;
-      }
-    });
-  });
-</script>

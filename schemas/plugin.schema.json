@@ -28,6 +28,19 @@
       "description": "Source repository. Plugin content lives here, not in this marketplace.",
       "format": "uri"
     },
+    "source": {
+      "description": "Optional explicit GitHub package location for a monorepo or pinned revision.",
+      "type": "object",
+      "required": ["source", "repo"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "const": "github" },
+        "repo": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "path": { "$ref": "#/$defs/localPath" },
+        "ref": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^(?!.*\\.\\.)(?!.*//)[A-Za-z0-9][A-Za-z0-9._/-]*$" },
+        "sha": { "type": "string", "pattern": "^[a-fA-F0-9]{40}$" }
+      }
+    },
     "license": { "type": "string" },
     "keywords": { "type": "array", "items": { "type": "string" } },
     "category": { "type": "string", "minLength": 1 },
@@ -35,6 +48,11 @@
     "directory": { "$ref": "#/$defs/directory" }
   },
   "$defs": {
+    "localPath": {
+      "type": "string",
+      "maxLength": 512,
+      "pattern": "^(?!.*(?:^|/)\\.{1,2}(?:/|$))[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$"
+    },
     "author": {
       "type": "object",
       "required": ["name"],
@@ -79,6 +97,26 @@
             "hooks": { "type": "integer", "minimum": 1 },
             "mcpServers": { "type": "integer", "minimum": 1 }
           }
+        },
+        "components": {
+          "description": "Complete component inventory; paths are relative to the plugin source directory.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "kind", "path"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "\\S" },
+              "kind": { "enum": ["skill", "agent", "hook", "mcp-server"] },
+              "path": { "$ref": "#/$defs/localPath" }
+            }
+          }
+        },
+        "notes": {
+          "description": "Source-verified prerequisites or installation caveats, not security certification.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 1024 }
         }
       }
     }

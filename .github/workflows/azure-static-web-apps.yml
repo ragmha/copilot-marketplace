@@ -1,0 +1,153 @@
+name: Deploy marketplace to Azure Static Web Apps
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: >-
+      ${{ vars.DEPLOY_TARGET == 'azure' &&
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Require the default branch
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/$DEFAULT_BRANCH" ]]; then
+            echo "::error::Production builds must run from the repository's default branch."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.0
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate catalog and check synchronization
+        run: bun run validate && bun run marketplace:check
+
+      - name: Build site
+        run: bun run build
+        env:
+          BASE_PATH: /
+          PUBLIC_MARKETPLACE_REPO: ${{ github.repository }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-static-site
+          path: dist
+          if-no-files-found: error
+
+  deploy:
+    needs: build
+    if: >-
+      ${{ vars.DEPLOY_TARGET == 'azure' &&
+          github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    environment:
+      name: azure-static-web-apps
+      url: ${{ steps.deployment.outputs.static_web_app_url }}
+    concurrency:
+      group: azure-static-web-apps
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: azure-static-site
+          path: dist
+
+      - name: Check Azure authentication configuration
+        env:
+          AUTH_MODE: ${{ vars.AZURE_AUTH_MODE }}
+          CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          SITE_NAME: ${{ vars.AZURE_STATIC_WEB_APP_NAME }}
+        run: |
+          set -euo pipefail
+          case "$AUTH_MODE" in
+            ""|token) ;;
+            oidc)
+              for value in "$CLIENT_ID" "$TENANT_ID" "$SUBSCRIPTION_ID"; do
+                if [[ ! "$value" =~ ^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$ ]]; then
+                  echo "::error::The protected environment is missing a valid Azure identity or subscription ID."
+                  exit 1
+                fi
+              done
+              if [[ ! "$RESOURCE_GROUP" =~ ^[a-zA-Z0-9._-]+$ || ! "$SITE_NAME" =~ ^[a-zA-Z0-9-]+$ ]]; then
+                echo "::error::The protected environment is missing the provisioned Static Web App coordinates."
+                exit 1
+              fi
+              ;;
+            *)
+              echo "::error::AZURE_AUTH_MODE must be oidc, token, or empty."
+              exit 1
+              ;;
+          esac
+
+      - name: Sign in to Azure using GitHub OIDC
+        if: vars.AZURE_AUTH_MODE == 'oidc'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Resolve the deployment credential
+        id: credentials
+        env:
+          AUTH_MODE: ${{ vars.AZURE_AUTH_MODE }}
+          STORED_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          SITE_NAME: ${{ vars.AZURE_STATIC_WEB_APP_NAME }}
+        run: |
+          set -euo pipefail
+          if [[ "$AUTH_MODE" == "oidc" ]]; then
+            token="$(az staticwebapp secrets list \
+              --subscription "$SUBSCRIPTION_ID" \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$SITE_NAME" \
+              --query properties.apiKey --output tsv --only-show-errors)"
+          else
+            token="$STORED_TOKEN"
+          fi
+          if [[ -z "$token" || "$token" == "null" || "$token" =~ [[:space:]] ]]; then
+            echo "::error::No usable Static Web Apps deployment token was returned."
+            exit 1
+          fi
+          printf '::add-mask::%s\n' "$token"
+          printf 'token=%s\n' "$token" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to Azure Static Web Apps
+        id: deployment
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.credentials.outputs.token }}
+          action: upload
+          app_location: dist
+          api_location: ""
+          output_location: ""
+          skip_app_build: true
+          skip_api_build: true
+          production_branch: ${{ github.event.repository.default_branch }}
