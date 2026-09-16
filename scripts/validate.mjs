@@ -1,11 +1,15 @@
 // Validate every plugin.json and the generated catalog against the schemas,
 // plus repo-level cross-checks that a schema alone cannot express.
 //
-// Usage: node scripts/validate.mjs
+// Usage: bun scripts/validate.mjs
 import { relative } from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
+import { loadConfig } from "./lib/config.mjs";
 import {
+  buildMarketplace,
+  componentIssues,
   loadExistingMarketplace,
   loadPlugins,
   paths,
@@ -22,6 +26,7 @@ function formatErrors(errors) {
 }
 
 function main() {
+  const config = loadConfig();
   const ajv = new Ajv({ allErrors: true, allowUnionTypes: true, strict: false });
   addFormats(ajv);
 
@@ -42,6 +47,10 @@ function main() {
       errors.push(
         `✗ ${rel(plugin.manifestPath)} failed schema validation:\n${formatErrors(validatePlugin.errors)}`,
       );
+    } else {
+      for (const issue of componentIssues(plugin.manifest)) {
+        errors.push(`✗ ${rel(plugin.manifestPath)}: ${issue}`);
+      }
     }
 
     // The directory name is what consumers install by, so it has to match.
@@ -62,7 +71,7 @@ function main() {
   const marketplace = loadExistingMarketplace();
 
   if (!marketplace) {
-    errors.push(`✗ Missing ${rel(paths.marketplaceFile)}. Run "npm run marketplace".`);
+    errors.push(`✗ Missing ${rel(paths.marketplaceFile)}. Run "bun run marketplace".`);
   } else {
     if (!validateMarketplace(marketplace)) {
       errors.push(
@@ -70,11 +79,23 @@ function main() {
       );
     }
 
-    const entryNames = new Set(marketplace.plugins?.map((entry) => entry.name));
+    const expected = buildMarketplace(config);
+    if (!isDeepStrictEqual(
+      { name: marketplace.name, owner: marketplace.owner, metadata: marketplace.metadata },
+      { name: expected.name, owner: expected.owner, metadata: expected.metadata },
+    )) {
+      errors.push(
+        `✗ Catalog identity differs from marketplace.config.json. Run "bun run marketplace".`,
+      );
+    }
+
+    const entryNames = new Set(
+      Array.isArray(marketplace.plugins) ? marketplace.plugins.map((entry) => entry?.name) : [],
+    );
 
     for (const name of seen.keys()) {
       if (!entryNames.has(name)) {
-        errors.push(`✗ Plugin "${name}" is missing from the catalog. Run "npm run marketplace".`);
+        errors.push(`✗ Plugin "${name}" is missing from the catalog. Run "bun run marketplace".`);
       }
     }
 
@@ -91,7 +112,12 @@ function main() {
     process.exit(1);
   }
 
-  console.log(`✓ ${plugins.length} plugin(s) and the catalog conform to the schemas.`);
+  console.log(`✓ Configuration, ${plugins.length} plugin(s), and the catalog conform to the schemas.`);
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  console.error(`Validation failed: ${error.message}`);
+  process.exitCode = 1;
+}

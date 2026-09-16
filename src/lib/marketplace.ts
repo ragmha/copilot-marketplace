@@ -1,3 +1,26 @@
+import configJson from "../../marketplace.config.json";
+import { createInstallGuides, type InstallGuide } from "./installation";
+export type { InstallGuide, InstallStep } from "./installation";
+
+export type Branding = {
+  organization: string;
+  title: string;
+  description: string;
+  logo?: string;
+  logoDark?: string;
+};
+
+export type SiteConfig = {
+  name: string;
+  repository: string;
+  version: string;
+  owner: { name: string; email?: string };
+  branding: Branding;
+};
+
+const config: SiteConfig = configJson;
+export const branding: Branding = config.branding;
+
 export type PluginType =
   | "plugin"
   | "skill"
@@ -15,6 +38,19 @@ export type Contains = {
   mcpServers?: number;
 };
 
+export type GitHubSource = {
+  source: "github";
+  repo: string;
+  path?: string;
+  ref?: string;
+  sha?: string;
+};
+export type PluginComponent = {
+  name: string;
+  kind: "skill" | "agent" | "hook" | "mcp-server";
+  path: string;
+};
+
 export type Plugin = {
   name: string;
   description: string;
@@ -26,12 +62,15 @@ export type Plugin = {
   updated: string;
   contains?: Contains;
   repository: string;
+  source?: string | GitHubSource;
+  components?: PluginComponent[];
+  notes?: string[];
 };
 
 /** One entry exactly as it appears in the generated `marketplace.json`. */
 export type CatalogEntry = {
   name: string;
-  source: string | { source: string; repo: string };
+  source: string | GitHubSource;
   description: string;
   version: string;
   author: { name: string };
@@ -42,6 +81,8 @@ export type CatalogEntry = {
     featured?: boolean;
     updated: string;
     contains?: Contains;
+    components?: PluginComponent[];
+    notes?: string[];
   };
 };
 
@@ -68,6 +109,9 @@ export function normalize(catalog: Marketplace): Plugin[] {
     updated: entry.directory.updated,
     contains: entry.directory.contains,
     repository: entry.repository,
+    source: entry.source,
+    components: entry.directory.components,
+    notes: entry.directory.notes,
   }));
 }
 
@@ -100,6 +144,7 @@ export const typeChip: Record<PluginType, string> = {
 
 /** What each category is for, shown under the collection heading. */
 export const categoryBlurbs: Record<string, string> = {
+  "Microsoft Fabric": "Build and operate data engineering, analytics, and Power BI workflows.",
   Delivery: "Plan the release, write the notes, and ship with confidence.",
   "Code quality": "Catch problems in review before they reach production.",
   Onboarding: "Find your way around an unfamiliar codebase, fast.",
@@ -119,7 +164,7 @@ export function pluginArt(name: string): PluginArt {
   }
 
   const first = (hash % 5) + 1;
-  const offset = ((hash >> 3) % 4) + 1;
+  const offset = ((hash >>> 3) % 4) + 1;
   const second = ((first - 1 + offset) % 5) + 1;
   const angle = 120 + (hash % 6) * 20;
 
@@ -141,7 +186,25 @@ export function pluginArt(name: string): PluginArt {
  * served from a repository subpath on GitHub Pages.
  */
 export function pluginHref(name: string): string {
-  return `${import.meta.env.BASE_URL.replace(/\/$/, "")}/plugins/${name}/`;
+  return `${marketplaceHome}plugins/${name}/`;
+}
+
+export const marketplaceHome = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+export const pluginGuideHref = `${marketplaceHome}learn/plugins/`;
+export const submissionHref = `${marketplaceHome}submit/`;
+
+export function pluginSourceHref(plugin: Plugin, component?: PluginComponent): string {
+  const source = plugin.source;
+  if (!source || typeof source === "string") return plugin.repository;
+  if (!source.path && !source.sha && !source.ref && !component) return plugin.repository;
+  const path = [source.path, component?.path].filter(Boolean).join("/");
+  const encoded = path.split("/").map(encodeURIComponent).join("/");
+  return `https://github.com/${source.repo}/${component ? "blob" : "tree"}/${encodeURIComponent(source.sha ?? source.ref ?? "HEAD")}/${encoded}`;
+}
+
+/** Config validation ensures this is a public-relative local asset path. */
+export function brandLogoHref(path: string): string {
+  return `${marketplaceHome}${path}`;
 }
 
 const containsLabels: { key: keyof Contains; singular: string; plural: string }[] = [
@@ -179,8 +242,11 @@ export function describeUpdated(date: string, now = new Date()): string {
 }
 
 /** Repository that hosts this marketplace's `marketplace.json`. */
-export const marketplaceRepo = "your-org/copilot-marketplace";
-export const marketplaceKey = "copilot-marketplace";
+export const marketplaceRepo = import.meta.env.PUBLIC_MARKETPLACE_REPO || config.repository;
+if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(marketplaceRepo)) {
+  throw new Error("PUBLIC_MARKETPLACE_REPO must be a GitHub owner/repository, not a URL.");
+}
+export const marketplaceKey = config.name;
 const samplePlugin = "release-captain";
 
 // `copilot plugin marketplace add` takes OWNER/REPO for GitHub.com repositories,
@@ -216,117 +282,6 @@ export function installCommand(name: string): string {
   return `copilot plugin install ${name}@${marketplaceKey}`;
 }
 
-export type InstallStep = { text: string; code?: string; caption?: string };
-export type InstallGuide = {
-  id: string;
-  label: string;
-  summary: string;
-  /** The one snippet worth copying for this client. Absent when the client has no single command. */
-  primary?: { code: string; label: string };
-  steps: InstallStep[];
-};
-
-/**
- * Install steps for one specific plugin. Every snippet names the plugin, so the
- * guide is only ever rendered on a plugin's own page.
- */
-export function installGuidesFor(plugin: string): InstallGuide[] {
-  const projectSettings = projectSettingsFor(plugin);
-  const qualified = `${plugin}@${marketplaceKey}`;
-
-  return [
-    {
-      id: "vscode",
-      label: "VS Code",
-      summary: "Plugin support is behind a setting, then plugins install from the Chat view.",
-      primary: { code: projectSettings, label: ".github/copilot/settings.json" },
-      steps: [
-        {
-          text: "Turn on plugin support in your user settings.json.",
-          code: JSON.stringify({ "chat.plugins.enabled": true }, null, 2),
-        },
-        {
-          text: `Add the marketplace and enable ${plugin} in the repository's .github/copilot/settings.json, then commit it so the whole team gets it.`,
-          code: projectSettings,
-        },
-        {
-          text: "Open the Chat view, select the cog, then Agent Customizations, then Plugins to browse and install.",
-          caption:
-            "Installed plugins appear under Agent Plugins - Installed in the Extensions view.",
-        },
-      ],
-    },
-    {
-      id: "cli",
-      label: "Copilot CLI",
-      summary: "Register the marketplace once, then install this plugin by name.",
-      primary: { code: `copilot plugin install ${qualified}`, label: "Terminal" },
-      steps: [
-        { text: "Add the marketplace.", code: cliCommand },
-        { text: `Install ${plugin}.`, code: `copilot plugin install ${qualified}` },
-        {
-          text: "Confirm it is installed.",
-          code: "copilot plugin list",
-          caption: `Inside an interactive session, use /plugin install ${qualified}.`,
-        },
-      ],
-    },
-    {
-      id: "app",
-      label: "Copilot App",
-      summary: "Browse and install from the app, or commit the settings for everyone.",
-      primary: { code: appSettings, label: "Copilot app settings" },
-      steps: [
-        { text: "Click Customize, then Plugins." },
-        {
-          text: `Add this marketplace by its repository, ${marketplaceRepo}, then install ${plugin} from the list.`,
-        },
-        {
-          text: "To skip the UI, add the marketplace to your settings instead.",
-          code: appSettings,
-        },
-      ],
-    },
-    {
-      id: "cloud",
-      label: "Copilot Cloud Agent",
-      summary: "Configuration only — the cloud agent installs plugins declaratively.",
-      primary: { code: projectSettings, label: ".github/copilot/settings.json" },
-      steps: [
-        {
-          text: "Commit .github/copilot/settings.json to the repository the agent works in.",
-          code: projectSettings,
-        },
-        {
-          text: `The agent picks ${plugin} up on its next run. There is nothing to install by hand.`,
-          caption:
-            "Enterprise administrators can push marketplaces and plugins to everyone through enterprise-managed plugin standards.",
-        },
-      ],
-    },
-    {
-      id: "m365",
-      label: "M365 Copilot",
-      summary:
-        "A different packaging model: Microsoft 365 uses agents uploaded as a ZIP, not GitHub plugins.",
-      steps: [
-        {
-          text: "Export the agent as a ZIP. In Copilot Studio, open Agents, pick your agent, then Channels, then Teams and Microsoft Copilot, then Availability options, then Download .zip.",
-          caption:
-            "The ZIP carries the manifest, configuration, icons, branding, and any embedded knowledge files.",
-        },
-        {
-          text: "Open the Microsoft 365 admin center, then Agents, then Upload custom agent.",
-          code: "https://admin.microsoft.com/",
-        },
-        { text: "Choose the ZIP file and let it validate." },
-        { text: "Verify the agent's name, icon, and host products, then continue." },
-        {
-          text: "Assign users, then continue.",
-          caption: "Start with Just me or one test group before opening it up.",
-        },
-        { text: "Review the agent's permissions and capabilities, then Finish deployment." },
-      ],
-    },
-  ];
+export function installGuidesFor(plugin?: string): InstallGuide[] {
+  return createInstallGuides({ repository: marketplaceRepo, name: marketplaceKey }, plugin);
 }

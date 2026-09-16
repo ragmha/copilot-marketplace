@@ -1,63 +1,40 @@
-name: Add a plugin
-description: Propose a new plugin for the internal Copilot marketplace.
-title: "[plugin] <plugin-name>"
+name: Submit a skill or plugin
+description: Share an existing capability or propose a new skill draft for maintainer review.
+title: "[submission] "
 labels: ["plugin-submission"]
 body:
   - type: markdown
     attributes:
       value: |
-        Plugin content stays in your own repository. This issue registers it in
-        the catalog. Prefer to open a PR directly? See
-        [docs/contributing-a-plugin.md](../blob/master/docs/contributing-a-plugin.md).
+        This is a review request, not automatic publication or a pull request.
+        You can link existing content or describe a new skill. No Git commands
+        or corporate email address are required.
+
+        Before publishing, a maintainer confirms the source repository, package
+        manifest, version, access requirements, and security review. Plugin content
+        lives in its own repository; this marketplace stores catalog records only.
+        Do not include credentials, personal data, or confidential customer information.
 
   - type: input
     id: name
     attributes:
-      label: Plugin name
-      description: kebab-case, unique. Becomes the directory name and the install identifier.
-      placeholder: release-captain
-    validations:
-      required: true
-
-  - type: textarea
-    id: description
-    attributes:
-      label: Description
-      description: One sentence describing what it does for the user.
-      placeholder: Draft a changelog and release PR description from the branch diff.
+      label: Name
+      description: A short, readable name for the capability.
+      placeholder: Deal health check
     validations:
       required: true
 
   - type: input
-    id: repository
+    id: slug
     attributes:
-      label: Repository
-      description: Where the plugin actually lives. Copilot clones this on install.
-      placeholder: https://github.com/your-org/release-captain
-    validations:
-      required: true
-
-  - type: input
-    id: version
-    attributes:
-      label: Version
-      placeholder: 1.0.0
-    validations:
-      required: true
-
-  - type: input
-    id: author
-    attributes:
-      label: Owning team
-      placeholder: Developer Experience
-    validations:
-      required: true
+      label: Suggested identifier
+      description: Optional lowercase name with hyphens; a maintainer can help finalize this.
+      placeholder: deal-health-check
 
   - type: dropdown
-    id: type
+    id: capability-kind
     attributes:
-      label: Type
-      description: Which tab the entry appears under on the directory site.
+      label: What are you sharing?
       options:
         - plugin
         - skill
@@ -66,26 +43,59 @@ body:
         - hook
         - mcp-server
         - extension
+      default: 1
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What does it do, and when should someone use it?
+      description: A sentence or two describing the task and expected outcome.
     validations:
       required: true
 
   - type: input
+    id: repository
+    attributes:
+      label: Existing repository
+      description: Optional HTTPS link. Leave blank when proposing a new draft below.
+      placeholder: https://github.com/your-team/your-skill
+
+  - type: textarea
+    id: instructions
+    attributes:
+      label: Instructions or skill draft
+      description: Plain-language instructions or a SKILL.md draft. Provide this or a repository link.
+      render: markdown
+
+  - type: input
+    id: author
+    attributes:
+      label: Your name or team
+      description: Optional. The GitHub account submitting this issue is credited automatically.
+
+  - type: input
     id: category
     attributes:
-      label: Category
-      description: Reuse an existing category where possible.
-      placeholder: Delivery
-    validations:
-      required: true
+      label: Use case
+      description: Optional. Describe who this helps or which workflow it belongs to.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Optional. Leave blank if this has not been packaged yet.
+      placeholder: 1.0.0
 
   - type: checkboxes
     id: checks
     attributes:
       label: Before submitting
       options:
-        - label: The repository is visible to everyone in the organisation.
+        - label: I can share this content with the people who can access this repository.
           required: true
-        - label: It contains a valid `.github/plugin/plugin.json` (or equivalent manifest).
+        - label: It contains no secrets, credentials, personal data, or confidential customer information.
           required: true
-        - label: It contains no secrets, credentials, or customer data.
+        - label: I understand a maintainer reviews this request and publication is not automatic.
           required: true

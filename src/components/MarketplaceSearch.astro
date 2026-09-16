@@ -1,0 +1,46 @@
+---
+import { marketplaceHome } from "../lib/marketplace";
+---
+
+<form id="catalog-search" role="search" action={`${marketplaceHome}#catalog`} method="get" class="w-full">
+  <label for="search" class="sr-only">Search the marketplace</label>
+  <div class="flex min-h-11 items-center gap-3 rounded-md border border-border bg-muted/50 px-3 focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/25">
+    <svg class="size-4 shrink-0 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <circle cx="10.5" cy="10.5" r="6.5"></circle>
+      <path d="m16 16 4.5 4.5" stroke-linecap="round"></path>
+    </svg>
+    <input
+      id="search"
+      name="q"
+      type="search"
+      placeholder="Search the marketplace"
+      aria-describedby="search-hint"
+      autocomplete="off"
+      class="min-w-0 flex-1 bg-transparent py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:appearance-none"
+    />
+    <button id="clear-search" type="button" aria-label="Clear search" hidden class="min-h-10 rounded px-2 text-xs text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">Clear</button>
+    <kbd class="hidden rounded border border-border px-1.5 py-0.5 text-xs text-muted-foreground sm:block" aria-hidden="true">/</kbd>
+  </div>
+  <p id="search-hint" class="sr-only">Search names, descriptions, publishers, and versions. Press slash to focus search.</p>
+</form>
+
+<script>
+  const search = document.getElementById("search") as HTMLInputElement | null;
+  const clear = document.getElementById("clear-search");
+  if (!search || !clear) throw new Error("The marketplace header is missing search controls.");
+  search.addEventListener("input", () => { clear.hidden = search.value.length === 0; });
+  clear.addEventListener("click", () => {
+    search.value = "";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    search.focus();
+  });
+  document.addEventListener("keydown", (event) => {
+    const target = event.target;
+    const editing = target instanceof HTMLElement &&
+      (target.isContentEditable || Boolean(target.closest("input, textarea, select, [role='textbox']")));
+    if (event.key === "/" && !event.ctrlKey && !event.metaKey && !event.altKey && !editing) {
+      event.preventDefault();
+      search.focus();
+    }
+  });
+</script>

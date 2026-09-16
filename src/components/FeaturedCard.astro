@@ -59,15 +59,16 @@ const contents = describeContents(plugin.contains);
     }
 
     <div
-      class="mt-auto flex items-center justify-between gap-3 pt-5 text-xs text-muted-foreground"
+      class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5 text-xs text-muted-foreground"
     >
       <button
         type="button"
         data-install={installCommand(plugin.name)}
+        aria-label={`Copy install command for ${plugin.name}`}
         class="relative z-10 -m-1 flex items-center gap-1.5 p-1 transition-colors hover:text-foreground"
       >
         <span aria-hidden="true">+</span>
-        Install
+        Copy install command
       </button>
       <span title={plugin.updated}>{describeUpdated(plugin.updated)}</span>
     </div>

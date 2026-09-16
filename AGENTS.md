@@ -10,7 +10,7 @@ An internal GitHub Copilot **plugin marketplace**. It has two halves:
    `.github/plugin/marketplace.json`. This is what Copilot CLI, VS Code, the
    Copilot app, and cloud agents read when the marketplace is added.
 2. **The site** — an Astro static site that renders the catalog for humans and
-   publishes it to GitHub Pages.
+   can publish to GitHub Pages or Azure Static Web Apps.
 
 Plugin *content* (skills, agents, MCP servers, prompts) lives in each plugin's
 own repository. This repo only holds registry records.
@@ -28,6 +28,9 @@ Never run `npm install` here or suggest it in docs, and never commit a
 | `bun run dev`              | Astro dev server on <http://localhost:4321>              |
 | `bun run build`            | Static build into `dist/`                                |
 | `bun run check`            | `astro check` — types and template diagnostics           |
+| `bun run test`             | Catalog filtering, ranking, and shareable URL tests      |
+| `bun run setup --help`      | Configure the adopting company, repository, and logos    |
+| `bun run test:template`    | Acme browser acceptance tests at root and Pages subpath  |
 | `bun run marketplace`      | Regenerate the catalog from `plugins/`                   |
 | `bun run marketplace:check`| Fail if the catalog is out of date (what CI runs)        |
 | `bun run validate`         | Validate manifests and the catalog against the schemas   |
@@ -75,6 +78,28 @@ or use the `add-a-plugin` skill in `.github/skills/`.
 - Client-side behaviour lives in inline `<script>` blocks in the component that
   owns it. `Catalog.astro`'s filter script depends on the `data-*` attributes
   emitted by `PluginCard.astro` — keep them in sync.
+- Pure filtering, ranking, and URL state helpers live in `src/lib/catalog.ts`.
+  Sort the actual card elements so visual, screen-reader, and keyboard order agree.
+- Company identity and logo paths live in `marketplace.config.json`, shared by
+  the generator and site. Configure it directly or use `bun run setup`; regenerate
+  the catalog after identity changes. Never hardcode company names in components.
+- `MarketplaceSearch.astro` owns header search and keyboard access. `Catalog.astro`
+  applies its query to category-grouped cards. Preserve search from detail pages.
+- `InstallGuide.astro` shares the APM, Copilot CLI, and VS Code tabs between
+  Quickstart and detail pages; method-specific instructions live in `src/lib/installation.ts`.
+- Submission forms remain static: `src/lib/submission.ts` maps fields to
+  `.github/ISSUE_TEMPLATE/new-plugin.yml` IDs. File imports read metadata locally;
+  they must not upload or execute content, or silently replace a draft.
+- Build links from `marketplaceHome` / `pluginHref`, not root-relative literals.
+  Both root hosting (Azure/custom domains) and repository subpaths (Pages) must work.
+- `PUBLIC_MARKETPLACE_REPO` is a non-secret build-time `owner/repository` setting
+  overriding install snippets and repository links; it does not replace the
+  source config or regenerate metadata. Never put credentials in `PUBLIC_*`.
+- Template acceptance tests copy the app into isolated Acme fixtures. Run
+  Playwright with its Node-based CLI (`bun run test:template`), not `bun --bun`;
+  browser launch via Bun can hang on Windows.
+- Keep Vite caches local to each project's `.astro/` directory. Acceptance
+  fixtures link dependencies but must not invalidate the running dev server.
 
 ## Style
 

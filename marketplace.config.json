@@ -1,0 +1,14 @@
+{
+  "name": "copilot-marketplace",
+  "repository": "your-org/copilot-marketplace",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Developer Experience",
+    "email": "copilot-marketplace@example.com"
+  },
+  "branding": {
+    "organization": "Your organization",
+    "title": "Copilot Marketplace",
+    "description": "Internal Copilot plugins for everyday engineering workflows."
+  }
+}

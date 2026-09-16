@@ -2,30 +2,26 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Hero from "../components/Hero.astro";
-import Featured from "../components/Featured.astro";
-import Collections from "../components/Collections.astro";
+import Quickstart from "../components/Quickstart.astro";
 import Catalog from "../components/Catalog.astro";
-import Anatomy from "../components/Anatomy.astro";
 import InstallToast from "../components/InstallToast.astro";
 import Footer from "../components/Footer.astro";
 import catalog from "../../public/marketplace.json";
-import { normalize, type Marketplace } from "../lib/marketplace";
+import { branding, normalize, type Marketplace } from "../lib/marketplace";
 
 // The catalog is generated from `plugins/*/plugin.json` and lives in `public/`
 // so it is both this page's source and the file Copilot clients fetch.
 const marketplace = catalog as Marketplace;
 const plugins = normalize(marketplace);
-const { metadata } = marketplace;
+const categories = new Set(plugins.map((plugin) => plugin.category)).size;
 ---
 
-<Layout title="Copilot Marketplace" description={metadata.description}>
+<Layout title={branding.title} description={branding.description}>
   <Header />
   <main>
-    <Hero count={plugins.length} />
-    <Featured plugins={plugins} />
-    <Collections plugins={plugins} />
+    <Hero count={plugins.length} categories={categories} />
+    <Quickstart />
     <Catalog plugins={plugins} />
-    <Anatomy />
   </main>
   <Footer />
   <InstallToast />
