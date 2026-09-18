@@ -27,7 +27,7 @@ const cleanup = () => {
 process.on("exit", cleanup);
 
 try {
-  for (const path of ["src", "public", "scripts", "schemas", "astro.config.mjs", "tsconfig.json", "package.json", "marketplace.config.json"]) {
+  for (const path of ["src", "public", "scripts", "schemas", "patches", "astro.config.mjs", "tsconfig.json", "package.json", "marketplace.config.json"]) {
     cpSync(join(root, path), join(fixture, path), { recursive: true });
   }
   symlinkSync(join(root, "node_modules"), join(fixture, "node_modules"), process.platform === "win32" ? "junction" : "dir");

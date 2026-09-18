@@ -25,8 +25,9 @@
     "homepage": { "type": "string", "format": "uri" },
     "repository": {
       "type": "string",
-      "description": "Source repository. Plugin content lives here, not in this marketplace.",
-      "format": "uri"
+      "description": "Complete HTTPS source repository URL without embedded credentials, whitespace, or backslashes. Plugin content lives here, not in this marketplace.",
+      "format": "uri",
+      "pattern": "^[Hh][Tt][Tt][Pp][Ss]://[^/@?#\\s\\\\]+(?:[/?#][^\\s\\\\]*)?(?![\\s\\S])"
     },
     "source": {
       "description": "Optional explicit GitHub package location for a monorepo or pinned revision.",

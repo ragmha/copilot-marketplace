@@ -1,5 +1,6 @@
 import configJson from "../../marketplace.config.json";
 import { createInstallGuides, type InstallGuide } from "./installation";
+import { parseRepositoryUrl } from "./repository-url.mjs";
 export type { InstallGuide, InstallStep } from "./installation";
 
 export type Branding = {
@@ -194,6 +195,7 @@ export const pluginGuideHref = `${marketplaceHome}learn/plugins/`;
 export const submissionHref = `${marketplaceHome}submit/`;
 
 export function pluginSourceHref(plugin: Plugin, component?: PluginComponent): string {
+  parseRepositoryUrl(plugin.repository);
   const source = plugin.source;
   if (!source || typeof source === "string") return plugin.repository;
   if (!source.path && !source.sha && !source.ref && !component) return plugin.repository;
