@@ -1,3 +1,5 @@
+import { parseRepositoryUrl, repositoryUrlMessage } from "./repository-url.mjs";
+
 export type Submission = {
   name: string;
   slug: string;
@@ -48,12 +50,13 @@ export function validateSubmission(
   if (!draft.repository.trim() && !draft.instructions.trim()) add("instructions", "Add a repository link or write the instructions for your skill.");
   if (draft.repository.trim()) {
     try {
-      const url = new URL(draft.repository);
-      if (url.protocol !== "https:" || url.username || url.password || draft.repository.length > 500) {
-        add("repository", "Use an HTTPS repository link without embedded credentials.");
+      parseRepositoryUrl(draft.repository);
+      if (draft.repository.length > 500) {
+        add("repository", "Keep the repository link under 500 characters.");
       }
-    } catch {
-      add("repository", "Enter a complete HTTPS repository link.");
+    } catch (error) {
+      if (!(error instanceof TypeError)) throw error;
+      add("repository", repositoryUrlMessage);
     }
   }
   if (draft.instructions.length > 20000) add("instructions", "Keep the instructions under 20,000 characters, or link to a repository.");

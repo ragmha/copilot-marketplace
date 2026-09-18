@@ -52,7 +52,7 @@ The directory name **must** equal the `name` field.
 | `description`        | yes      | One sentence, plain language                                 |
 | `version`            | yes      | Semver                                                       |
 | `author.name`        | yes      | Owning team or person                                        |
-| `repository`         | yes      | The plugin's own repository URL                              |
+| `repository`         | yes      | The plugin's own complete HTTPS repository URL; no embedded credentials |
 | `source`             | no       | Explicit GitHub `repo`, package `path`, and optional `ref`/`sha` |
 | `category`           | yes      | Reuse an existing category where possible                    |
 | `directory.type`     | yes      | `plugin`, `skill`, `agent`, `prompt`, `hook`, `mcp-server`, or `extension` |
@@ -64,6 +64,13 @@ The directory name **must** equal the `name` field.
 
 Everything under `directory` is a local extension used only by this website.
 Copilot clients ignore it.
+
+Repository URLs must not contain whitespace, backslashes, or embedded
+credentials. HTTP, `javascript:`, `data:`, filesystem paths, and relative URLs
+are rejected by validation, generation, and the site's Source-link helper.
+This rule also applies when an explicit GitHub `source` is provided. Private
+repositories still use HTTPS URLs; authentication belongs in the client's
+credential manager, not the manifest.
 
 For a package inside a monorepo, set `source` to its actual directory rather
 than pointing every entry at the repository root. A full 40-character `sha`
