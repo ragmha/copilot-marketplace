@@ -2,6 +2,7 @@
 import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { loadConfig, readJson, repoRoot, validateConfig } from "./config.mjs";
+import { parseRepositoryUrl } from "../../src/lib/repository-url.mjs";
 
 export { readJson, repoRoot } from "./config.mjs";
 
@@ -64,10 +65,11 @@ const ENTRY_FIELDS = [
  * that repository rather than a path inside this one.
  */
 export function sourceFor(manifest) {
+  const url = parseRepositoryUrl(manifest.repository);
   if (manifest.source) return { ...manifest.source };
-  const match = /^https:\/\/github\.com\/([^/]+\/[^/]+?)(?:\.git)?\/?$/.exec(
-    manifest.repository ?? "",
-  );
+  const match = url.origin === "https://github.com" && !url.search && !url.hash
+    ? /^\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+?)(?:\.git)?\/?$/.exec(url.pathname)
+    : null;
   return match ? { source: "github", repo: match[1] } : manifest.repository;
 }
 

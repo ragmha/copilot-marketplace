@@ -1,0 +1,30 @@
+diff --git a/dist/runtime/server/render/util.js b/dist/runtime/server/render/util.js
+index 1f4f27c6a71562f9a6a90d8ee47ef20def52d5b2..e1341fa2b21ff1031b75acf74a89c61eabf1722e 100644
+--- a/dist/runtime/server/render/util.js
++++ b/dist/runtime/server/render/util.js
+@@ -72,9 +72,6 @@ Make sure to use the static attribute syntax (\`${key}={value}\`) instead of the
+   if (key === "className") {
+     return markHTMLString(` class="${toAttributeString(value, shouldEscape)}"`);
+   }
+-  if (typeof value === "string" && value.includes("&") && isHttpUrl(value)) {
+-    return markHTMLString(` ${key}="${toAttributeString(value, false)}"`);
+-  }
+   if (htmlBooleanAttributes.test(key)) {
+     return handleBooleanAttribute(key, value, shouldEscape, tagName);
+   }
+@@ -166,15 +163,6 @@ function promiseWithResolvers() {
+     reject
+   };
+ }
+-const VALID_PROTOCOLS = ["http:", "https:"];
+-function isHttpUrl(url) {
+-  try {
+-    const parsedUrl = new URL(url);
+-    return VALID_PROTOCOLS.includes(parsedUrl.protocol);
+-  } catch {
+-    return false;
+-  }
+-}
+ export {
+   addAttribute,
+   createBufferedRenderer,
