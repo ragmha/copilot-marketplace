@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/your-org/copilot-marketplace/schemas/marketplace.schema.json",
   "title": "Copilot plugin marketplace manifest (marketplace.json)",
-  "description": "Generated catalog. Do not edit by hand — run `npm run marketplace`.",
+  "description": "Generated catalog. Do not edit by hand — run `bun run marketplace`.",
   "type": "object",
   "required": ["name", "owner", "plugins"],
   "additionalProperties": false,
@@ -39,6 +39,12 @@
     }
   },
   "$defs": {
+    "repositoryUrl": {
+      "type": "string",
+      "description": "Complete HTTPS repository URL without embedded credentials, whitespace, or backslashes.",
+      "format": "uri",
+      "pattern": "^[Hh][Tt][Tt][Pp][Ss]://[^/@?#\\s\\\\]+(?:[/?#][^\\s\\\\]*)?(?![\\s\\S])"
+    },
     "pluginEntry": {
       "type": "object",
       "required": ["name", "source"],
@@ -52,7 +58,10 @@
         },
         "source": {
           "description": "Where a client fetches the plugin from.",
-          "type": ["string", "object"]
+          "anyOf": [
+            { "$ref": "#/$defs/repositoryUrl" },
+            { "type": "object" }
+          ]
         },
         "description": { "type": "string", "maxLength": 1024 },
         "version": { "type": "string" },
@@ -67,7 +76,7 @@
           }
         },
         "homepage": { "type": "string", "format": "uri" },
-        "repository": { "type": "string" },
+        "repository": { "$ref": "#/$defs/repositoryUrl" },
         "license": { "type": "string" },
         "keywords": { "type": "array", "items": { "type": "string" } },
         "category": { "type": "string" },
