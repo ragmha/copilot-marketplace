@@ -50,6 +50,10 @@ variable `DEPLOY_TARGET` to `github-pages` or `azure`, then follow the
 resource; `azd` provisioning is not included. A private repository does not
 automatically make its website private.
 
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
 ## How it works
 
 `marketplace.config.json` owns company identity and branding.

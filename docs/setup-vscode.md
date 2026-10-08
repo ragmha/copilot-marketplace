@@ -15,12 +15,9 @@ Plugins are behind a setting. In `settings.json`:
 ```json
 {
   "chat.plugins.enabled": true,
-  "chat.plugins.marketplaces": {
-    "copilot-marketplace": {
-      "source": "github",
-      "repo": "your-org/copilot-marketplace"
-    }
-  }
+  "chat.plugins.marketplaces": [
+    "your-org/copilot-marketplace"
+  ]
 }
 ```
 

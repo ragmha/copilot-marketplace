@@ -2,7 +2,8 @@
 // plus repo-level cross-checks that a schema alone cannot express.
 //
 // Usage: bun scripts/validate.mjs
-import { relative } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join, relative } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
@@ -23,6 +24,41 @@ function formatErrors(errors) {
   return (errors ?? [])
     .map((error) => `    - ${error.instancePath || "(root)"} ${error.message}`)
     .join("\n");
+}
+
+function validateWorkflowPins() {
+  const workflowDir = join(repoRoot, ".github", "workflows");
+  if (!existsSync(workflowDir)) {
+    return [];
+  }
+
+  const files = readdirSync(workflowDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && /\.ya?ml$/i.test(entry.name))
+    .map((entry) => join(workflowDir, entry.name));
+
+  const errors = [];
+
+  for (const file of files) {
+    const workflow = readFileSync(file, "utf8");
+    const lines = workflow.split(/\r?\n/);
+
+    for (const line of lines) {
+      const match = /^\s*uses:\s*([^\s#]+)\s*(?:#.*)?$/.exec(line);
+      if (!match) continue;
+
+      const ref = match[1];
+      if (ref.startsWith("./") || ref.startsWith("../") || ref.startsWith("docker://")) {
+        continue;
+      }
+
+      const digest = ref.includes("@") ? ref.slice(ref.lastIndexOf("@") + 1) : "";
+      if (!/^[0-9a-fA-F]{40}$/.test(digest)) {
+        errors.push(`✗ ${rel(file)} uses ${ref}, which is not SHA-pinned.`);
+      }
+    }
+  }
+
+  return errors;
 }
 
 function main() {
@@ -104,6 +140,10 @@ function main() {
         errors.push(`✗ Catalog entry "${name}" has no plugins/${name}/plugin.json.`);
       }
     }
+  }
+
+  for (const error of validateWorkflowPins()) {
+    errors.push(error);
   }
 
   if (errors.length > 0) {
