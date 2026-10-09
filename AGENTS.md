@@ -69,9 +69,12 @@ or use the `add-a-plugin` skill in `.github/skills/`.
 
 ## Site conventions
 
-- **Astro 5** with **Tailwind v4** via `@tailwindcss/vite`. There is no
+- **Astro 7** with **Tailwind v4** via `@tailwindcss/vite`. There is no
   `tailwind.config.js`; theme tokens are declared in `src/styles/global.css`
   with `@theme inline`.
+- Node.js **22.12.0 or newer** and Bun **1.4.0 or newer** are required.
+  Astro resolves its supported Vite 8; do not restore the old Vite 6 override.
+  Keep `compressHTML: true` to preserve HTML-aware whitespace between inline elements.
 - **shadcn token names** (`--background`, `--foreground`, `--card`, `--muted`,
   `--border`, `--primary`, `--chart-1..5`). Dark mode is a `.dark` class on
   `<html>`, toggled by `ThemeToggle.astro` and pre-applied by an inline script

@@ -5,7 +5,7 @@ description: Build or change the marketplace website — Astro components, pages
 
 # Working on the marketplace site
 
-Astro 5 static site, Tailwind v4, shadcn design tokens, monospace throughout.
+Astro 7 static site, Tailwind v4, shadcn design tokens, monospace throughout.
 
 ## Layout of the code
 
@@ -52,6 +52,10 @@ Data flows one way: `public/marketplace.json` → `normalize()` → flat `Plugin
   `pluginArt`, `installCommand`, `describeUpdated` — rather than re-deriving them.
 
 ## Things that will bite you
+
+- **Astro 7 requires Node.js >=22.12.0.** Use Bun >=1.4.0 for dependencies and
+  commands. Astro owns Vite 8 resolution; do not pin it back to Vite 6.
+  `compressHTML: true` preserves HTML-aware whitespace rather than the new JSX default.
 
 - **`Catalog.astro` filters the DOM, it does not re-render.** Its script reads
   `data-name`, `data-type`, `data-category`, `data-updated`, and `data-search` off

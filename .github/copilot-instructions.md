@@ -38,8 +38,10 @@ bun run build             # astro build
 
 ## Site
 
-- Astro 5 + Tailwind v4 (`@tailwindcss/vite`, no config file). Theme tokens are
+- Astro 7 + Tailwind v4 (`@tailwindcss/vite`, no config file). Theme tokens are
   in `src/styles/global.css` under `@theme inline`.
+- Require Node.js >=22.12.0 and Bun >=1.4.0. Let Astro resolve Vite 8 without
+  overrides; `compressHTML: true` retains HTML-aware inline spacing.
 - Use shadcn token classes — `bg-card`, `text-muted-foreground`, `border-border`,
   `bg-primary` — never raw colours like `bg-white` or `text-gray-500`.
 - Dark mode is a `.dark` class on `<html>`; every colour must work in both modes.

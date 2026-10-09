@@ -10,6 +10,9 @@ const base = process.env.BASE_PATH || "/";
 
 export default defineConfig({
   base,
+  output: "static",
+  // Astro 7 defaults to JSX whitespace rules; retain HTML-aware inline spacing.
+  compressHTML: true,
   integrations: [react()],
   vite: {
     // Fixture builds share dependencies, but must not invalidate the live server's cache.

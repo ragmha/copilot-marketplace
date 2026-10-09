@@ -26,7 +26,7 @@
    `acme/copilot-marketplace`.
 3. Clone **your new repository**, then configure and run it:
 
-Requires Git, Node.js, and [Bun](https://bun.sh).
+Requires Git, Node.js >=22.12.0, and [Bun](https://bun.sh) >=1.4.0.
 
 ```powershell
 git clone https://github.com/acme/copilot-marketplace.git
