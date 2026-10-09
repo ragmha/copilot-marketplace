@@ -48,6 +48,11 @@ Before finishing any change: `bun run validate && bun run marketplace:check && b
 - **Never hand-edit `.github/plugin/marketplace.json` or `public/marketplace.json`.**
   They are generated. Edit `plugins/<name>/plugin.json` and run `bun run marketplace`.
 - A plugin's directory name must equal its manifest `name`. Validation enforces it.
+- Real GitHub and Git URL entries must pin `source.sha` to a reviewed 40-hex commit.
+  Bump it only through a reviewed PR; never replace an existing pin automatically.
+- `directory.sample: true` marks template placeholders adopters should delete.
+  Samples remain in `public/marketplace.json` but are excluded from the installable
+  `.github/plugin/marketplace.json`; the site labels them and hides install commands.
 - The schemas use `additionalProperties: false`. Site-only display data goes in
   the `directory` object, which Copilot clients ignore.
 - No secrets in the frontend. This is a static site with no backend.

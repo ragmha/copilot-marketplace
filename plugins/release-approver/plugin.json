@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/release-approver",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "agent",
     "updated": "2026-07-22"
   }

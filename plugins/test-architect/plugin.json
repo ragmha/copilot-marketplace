@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/test-architect",
   "category": "Code quality",
   "directory": {
+    "sample": true,
     "type": "plugin",
     "updated": "2026-07-30",
     "contains": {

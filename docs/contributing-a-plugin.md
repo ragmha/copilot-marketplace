@@ -39,6 +39,7 @@ The directory name **must** equal the `name` field.
   "repository": "https://github.com/your-org/release-captain",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "agent",
     "updated": "2026-02-14",
     "contains": { "agents": 1, "skills": 2 }
@@ -53,17 +54,24 @@ The directory name **must** equal the `name` field.
 | `version`            | yes      | Semver                                                       |
 | `author.name`        | yes      | Owning team or person                                        |
 | `repository`         | yes      | The plugin's own complete HTTPS repository URL; no embedded credentials |
-| `source`             | no       | Explicit GitHub `repo`, package `path`, and optional `ref`/`sha` |
+| `source`             | real remote plugins | Explicit GitHub `repo` or Git `url`, package `path`, and required 40-hex `sha`; `ref` is optional |
 | `category`           | yes      | Reuse an existing category where possible                    |
 | `directory.type`     | yes      | `plugin`, `skill`, `agent`, `prompt`, `hook`, `mcp-server`, or `extension` |
 | `directory.updated`  | yes      | `YYYY-MM-DD`                                                 |
 | `directory.featured` | no       | Marks the entry as featured                                 |
+| `directory.sample`   | no       | `true` for template placeholders adopters should delete; never installable |
 | `directory.contains` | no       | Component counts: `skills`, `agents`, `hooks`, `mcpServers`   |
 | `directory.components` | no     | Complete named inventory with kind and source-relative path |
 | `directory.notes`    | no       | Source-verified prerequisites and installation caveats      |
 
 Everything under `directory` is a local extension used only by this website.
 Copilot clients ignore it.
+
+The example above is a **sample**, not an installable plugin. Samples stay in
+`public/marketplace.json` for the site, which labels them and hides install
+commands; they are excluded from `.github/plugin/marketplace.json`. Adopters
+should delete the template placeholders and register their own real plugins,
+not mark real plugins as samples to bypass pinning.
 
 Repository URLs must not contain whitespace, backslashes, or embedded
 credentials. HTTP, `javascript:`, `data:`, filesystem paths, and relative URLs
@@ -74,7 +82,24 @@ credential manager, not the manifest.
 
 For a package inside a monorepo, set `source` to its actual directory rather
 than pointing every entry at the repository root. A full 40-character `sha`
-pins the fetched revision; clients using `ref` can carry the same commit there.
+is required for every real GitHub or Git URL source and pins the fetched
+revision; clients using `ref` can carry the same commit there. For example:
+
+```json
+"source": {
+  "source": "github",
+  "repo": "your-org/release-captain",
+  "sha": "<reviewed 40-character commit SHA>"
+}
+```
+
+Replace the placeholder with an actual commit and remove `directory.sample`
+when registering a real plugin. Resolve the upstream default-branch HEAD with
+`git ls-remote https://github.com/<owner>/<repo>.git HEAD`, verify the package's
+plugin manifest exists at that SHA, and review the pinned content before
+submitting. Non-GitHub repositories use `"source": "url"` and `"url"` instead
+of `"repo"`, with the same required `sha`.
+
 Component inventory counts must match `directory.contains`. See the
 [Fabric collection](fabric-catalog.md) for a complete example.
 
@@ -100,6 +125,8 @@ Prefer not to open a PR? File a
 
 Edit `plugins/<name>/plugin.json`, bump `version`, set `directory.updated` to
 today, then regenerate and validate.
+Change `source.sha` only through a reviewed pull request; review the new commit
+and any hooks, MCP launch commands, endpoints, permissions, and telemetry it changes.
 
 ## Removing a plugin
 

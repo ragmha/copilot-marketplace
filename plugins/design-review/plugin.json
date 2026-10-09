@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/design-review",
   "category": "Code quality",
   "directory": {
+    "sample": true,
     "type": "prompt",
     "updated": "2026-08-21"
   }

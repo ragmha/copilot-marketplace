@@ -30,17 +30,11 @@
       "pattern": "^[Hh][Tt][Tt][Pp][Ss]://[^/@?#\\s\\\\]+(?:[/?#][^\\s\\\\]*)?(?![\\s\\S])"
     },
     "source": {
-      "description": "Optional explicit GitHub package location for a monorepo or pinned revision.",
-      "type": "object",
-      "required": ["source", "repo"],
-      "additionalProperties": false,
-      "properties": {
-        "source": { "const": "github" },
-        "repo": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
-        "path": { "$ref": "#/$defs/localPath" },
-        "ref": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^(?!.*\\.\\.)(?!.*//)[A-Za-z0-9][A-Za-z0-9._/-]*$" },
-        "sha": { "type": "string", "pattern": "^[a-fA-F0-9]{40}$" }
-      }
+      "description": "Explicit GitHub or Git URL package location. Real remote plugins require a full commit SHA.",
+      "anyOf": [
+        { "$ref": "#/$defs/githubSource" },
+        { "$ref": "#/$defs/urlSource" }
+      ]
     },
     "license": { "type": "string" },
     "keywords": { "type": "array", "items": { "type": "string" } },
@@ -49,6 +43,30 @@
     "directory": { "$ref": "#/$defs/directory" }
   },
   "$defs": {
+    "githubSource": {
+      "type": "object",
+      "required": ["source", "repo"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "const": "github" },
+        "repo": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "path": { "$ref": "#/$defs/localPath" },
+        "ref": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^(?!.*\\.\\.)(?!.*//)[A-Za-z0-9][A-Za-z0-9._/-]*$" },
+        "sha": { "type": "string", "minLength": 40, "maxLength": 40, "pattern": "^[a-fA-F0-9]{40}$" }
+      }
+    },
+    "urlSource": {
+      "type": "object",
+      "required": ["source", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "const": "url" },
+        "url": { "$ref": "#/properties/repository" },
+        "path": { "$ref": "#/$defs/localPath" },
+        "ref": { "type": "string", "minLength": 1, "maxLength": 256, "pattern": "^(?!.*\\.\\.)(?!.*//)[A-Za-z0-9][A-Za-z0-9._/-]*$" },
+        "sha": { "type": "string", "minLength": 40, "maxLength": 40, "pattern": "^[a-fA-F0-9]{40}$" }
+      }
+    },
     "localPath": {
       "type": "string",
       "maxLength": 512,
@@ -83,6 +101,10 @@
           ]
         },
         "featured": { "type": "boolean" },
+        "sample": {
+          "type": "boolean",
+          "description": "Template placeholder displayed on the site but excluded from the installable catalog."
+        },
         "updated": {
           "type": "string",
           "description": "ISO date (YYYY-MM-DD) of the last meaningful change.",

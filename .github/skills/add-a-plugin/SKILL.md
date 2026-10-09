@@ -18,6 +18,7 @@ Ask for anything missing before writing files:
 | `version`     | Semver of the plugin, e.g. `1.0.0`                                     |
 | `author`      | Team or person that owns it                                            |
 | `repository`  | `https://github.com/<owner>/<repo>` where the plugin actually lives    |
+| `source.sha`  | Required reviewed 40-hex commit for real GitHub or Git URL sources     |
 | `category`    | Reuse an existing one — check `plugins/*/plugin.json` first            |
 | `type`        | `plugin`, `skill`, `agent`, `prompt`, `hook`, `mcp-server`, `extension` |
 
@@ -35,6 +36,7 @@ Create `plugins/<name>/plugin.json`:
   "repository": "https://github.com/your-org/release-captain",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "agent",
     "updated": "2026-02-14",
     "contains": { "agents": 1, "skills": 2 }
@@ -45,7 +47,17 @@ Create `plugins/<name>/plugin.json`:
 Rules that validation enforces:
 
 - The schemas set `additionalProperties: false`. Anything that only the website
-  needs (`type`, `featured`, `updated`, `contains`) goes inside `directory`.
+  needs (`type`, `featured`, `updated`, `contains`, `sample`) goes inside `directory`.
+- The example is a template placeholder: `directory.sample: true` keeps it on
+  the site with a Sample badge and no install commands, but excludes it from
+  `.github/plugin/marketplace.json`. Adopters should delete sample placeholders.
+- Real remote entries must provide an explicit `source` with `source: "github"`
+  and `repo`, or `source: "url"` and `url`, plus a reviewed 40-hex `sha`.
+  Resolve upstream HEAD anonymously with
+  `git ls-remote https://github.com/<owner>/<repo>.git HEAD`, verify the package
+  manifest exists at that commit, and review its contents. Remove `sample`
+  for real entries; do not use it to bypass review. Bump `source.sha` only
+  through a reviewed PR, never automatically or to a floating branch/tag.
 - `updated` is `YYYY-MM-DD`. Use today's date for a new entry.
 - `contains` counts components in the plugin's own repo. The only keys the schema
   accepts are `skills`, `agents`, `hooks`, and `mcpServers`. Omit keys that are

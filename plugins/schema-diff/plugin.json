@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/schema-diff",
   "category": "Operations",
   "directory": {
+    "sample": true,
     "type": "skill",
     "updated": "2026-08-24"
   }

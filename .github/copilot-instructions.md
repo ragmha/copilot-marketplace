@@ -12,8 +12,13 @@ See [AGENTS.md](../AGENTS.md) for the full contributor guide. The essentials:
 - **Never edit the generated files.** Change a manifest, then run
   `bun run marketplace`.
 - Directory name must match the manifest `name`.
+- Real GitHub and Git URL entries require a reviewed 40-hex `source.sha`;
+  bump it only through a reviewed PR, never to a floating branch or tag.
+- `directory.sample: true` marks template placeholders adopters should delete.
+  Keep samples in the site catalog, exclude them from the installable catalog,
+  show a Sample badge, and never offer sample install commands.
 - Schemas in `schemas/` use `additionalProperties: false`; site-only fields
-  (`type`, `featured`, `updated`, `contains`) belong under `directory`.
+  (`type`, `featured`, `updated`, `contains`, `sample`) belong under `directory`.
 
 ## Checks
 

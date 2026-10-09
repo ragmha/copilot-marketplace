@@ -4,6 +4,8 @@ import {
   pluginArt,
   pluginHref,
   typeChip,
+  sampleLabel,
+  sampleExplanation,
   type Plugin,
 } from "../lib/marketplace";
 
@@ -25,6 +27,7 @@ const art = pluginArt(plugin.name);
   >
     {art.monogram}
   </span>
+  {plugin.sample && <span class="rounded border border-border bg-muted px-2 py-0.5 text-[11px] text-foreground">{sampleLabel}</span>}
 
   <div class="min-w-0 flex-1">
     <p class="flex flex-wrap items-center gap-2">
@@ -38,12 +41,12 @@ const art = pluginArt(plugin.name);
     <p class="mt-1 line-clamp-1 text-xs text-muted-foreground">{plugin.description}</p>
   </div>
 
-  <button
+  {plugin.sample ? <span class="text-xs text-muted-foreground" title={sampleExplanation}>Not installable</span> : <button
     type="button"
     data-install={installCommand(plugin.name)}
     class="relative z-10 grid size-8 shrink-0 place-items-center rounded-md border border-transparent text-muted-foreground transition-colors hover:border-border hover:text-foreground"
   >
     <span class="text-base leading-none" aria-hidden="true">+</span>
     <span class="sr-only">Copy the install command for {plugin.name}</span>
-  </button>
+  </button>}
 </li>

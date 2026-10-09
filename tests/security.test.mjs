@@ -98,7 +98,7 @@ test.each([
   "https://example.test/team/plugin?ref=main&compare=base#readme",
   "https://example.test/@team/plugin",
 ])("valid repository URL stays usable: %s", (repository) => {
-  const candidate = { ...manifest, repository };
+  const candidate = { ...manifest, repository, source: undefined };
   expect(validatePlugin(candidate)).toBe(true);
   const generated = buildEntry({ slug: manifest.name, manifest: candidate });
   expect(validateMarketplace(catalog(generated))).toBe(true);

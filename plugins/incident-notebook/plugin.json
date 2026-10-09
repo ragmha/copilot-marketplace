@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/incident-notebook",
   "category": "Operations",
   "directory": {
+    "sample": true,
     "type": "plugin",
     "updated": "2026-08-19",
     "contains": {

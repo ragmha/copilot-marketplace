@@ -56,6 +56,25 @@ test("Acme identity, logos, catalog, and install commands agree", async ({ page,
   await expect(page.locator("#install-code-cli")).toContainText("copilot plugin marketplace add acme/copilot-marketplace");
 });
 
+test("samples remain discoverable but cannot be installed in either theme", async ({ page }) => {
+  await page.goto("./");
+  const card = page.locator('[data-name="internal-docs"]');
+  for (const theme of ["light", "dark"]) {
+    await expect(card.getByText("Sample", { exact: true })).toBeVisible();
+    await expect(card.getByText("Not installable", { exact: true })).toBeVisible();
+    await expect(card.locator("[data-install]")).toHaveCount(0);
+    if (theme === "light") await page.getByRole("button", { name: "Toggle dark mode" }).click();
+  }
+  await card.locator("[data-plugin-link]").click();
+  await expect(page.locator("main").getByText("Sample", { exact: true }).first()).toBeVisible();
+  await expect(page.locator("main").getByText(/Template placeholder, not available to install/).first()).toBeVisible();
+  await expect(page.locator("[data-copy-text]")).toHaveCount(0);
+  await expect(page.getByRole("tablist", { name: "Installation method" })).toHaveCount(0);
+  await expect(page.locator("main")).not.toContainText("internal-docs@acme-tools");
+  await page.getByRole("button", { name: "Toggle dark mode" }).click();
+  await expect(page.locator("main").getByText("Sample", { exact: true }).first()).toBeVisible();
+});
+
 test("grouped discovery and navigation retain the hosting base", async ({ page, baseURL }) => {
   if (!baseURL) throw new Error("Missing template test base URL.");
   const base = new URL(baseURL).pathname;

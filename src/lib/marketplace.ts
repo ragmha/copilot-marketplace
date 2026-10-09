@@ -46,6 +46,13 @@ export type GitHubSource = {
   ref?: string;
   sha?: string;
 };
+export type UrlSource = {
+  source: "url";
+  url: string;
+  path?: string;
+  ref?: string;
+  sha?: string;
+};
 export type PluginComponent = {
   name: string;
   kind: "skill" | "agent" | "hook" | "mcp-server";
@@ -60,10 +67,11 @@ export type Plugin = {
   category: string;
   author: string;
   featured: boolean;
+  sample?: boolean;
   updated: string;
   contains?: Contains;
   repository: string;
-  source?: string | GitHubSource;
+  source?: string | GitHubSource | UrlSource;
   components?: PluginComponent[];
   notes?: string[];
 };
@@ -71,7 +79,7 @@ export type Plugin = {
 /** One entry exactly as it appears in the generated `marketplace.json`. */
 export type CatalogEntry = {
   name: string;
-  source: string | GitHubSource;
+  source: string | GitHubSource | UrlSource;
   description: string;
   version: string;
   author: { name: string };
@@ -80,6 +88,7 @@ export type CatalogEntry = {
   directory: {
     type: PluginType;
     featured?: boolean;
+    sample?: boolean;
     updated: string;
     contains?: Contains;
     components?: PluginComponent[];
@@ -107,6 +116,7 @@ export function normalize(catalog: Marketplace): Plugin[] {
     category: entry.category,
     author: entry.author.name,
     featured: entry.directory.featured ?? false,
+    sample: entry.directory.sample ?? false,
     updated: entry.directory.updated,
     contains: entry.directory.contains,
     repository: entry.repository,
@@ -142,6 +152,9 @@ export const typeChip: Record<PluginType, string> = {
   "mcp-server": "MCP",
   extension: "Extension",
 };
+
+export const sampleLabel = "Sample";
+export const sampleExplanation = "Template placeholder, not available to install. Adopters should delete this sample and register their own pinned plugin.";
 
 /** What each category is for, shown under the collection heading. */
 export const categoryBlurbs: Record<string, string> = {
@@ -198,6 +211,7 @@ export function pluginSourceHref(plugin: Plugin, component?: PluginComponent): s
   parseRepositoryUrl(plugin.repository);
   const source = plugin.source;
   if (!source || typeof source === "string") return plugin.repository;
+  if (source.source === "url") return parseRepositoryUrl(source.url).href;
   if (!source.path && !source.sha && !source.ref && !component) return plugin.repository;
   const path = [source.path, component?.path].filter(Boolean).join("/");
   const encoded = path.split("/").map(encodeURIComponent).join("/");
@@ -249,7 +263,7 @@ if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(marketplaceRepo)) {
   throw new Error("PUBLIC_MARKETPLACE_REPO must be a GitHub owner/repository, not a URL.");
 }
 export const marketplaceKey = config.name;
-const samplePlugin = "release-captain";
+const examplePlugin = "fabric-skills";
 
 // `copilot plugin marketplace add` takes OWNER/REPO for GitHub.com repositories,
 // not a full URL.
@@ -277,7 +291,7 @@ const projectSettingsFor = (plugin: string) =>
     2,
   );
 
-export const cloudSettings = projectSettingsFor(samplePlugin);
+export const cloudSettings = projectSettingsFor(examplePlugin);
 
 /** The CLI one-liner that installs a specific plugin from this marketplace. */
 export function installCommand(name: string): string {

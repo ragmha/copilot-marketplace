@@ -16,6 +16,8 @@ import {
   pluginSourceHref,
   normalize,
   typeLabel,
+  sampleLabel,
+  sampleExplanation,
   type Marketplace,
   type Plugin,
 } from "../../lib/marketplace";
@@ -47,7 +49,7 @@ interface Props {
 const { plugin, related } = Astro.props;
 
 const contents = describeContents(plugin.contains);
-const command = installCommand(plugin.name);
+const command = plugin.sample ? undefined : installCommand(plugin.name);
 const label = typeLabel(plugin.type);
 const home = marketplaceHome;
 
@@ -90,6 +92,7 @@ const facts = [
       {plugin.type}
     </p>
 
+    {plugin.sample && <span class="ml-2 inline-block rounded border border-border bg-muted px-2 py-0.5 text-[11px] text-foreground">{sampleLabel}</span>}
     <h1 class="mt-3 text-3xl font-bold tracking-tight break-words sm:text-4xl">{plugin.name}</h1>
 
     <p class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
@@ -147,6 +150,7 @@ const facts = [
             </ul>
           </section>
         )}
+        {plugin.sample ? <p class="mt-8 rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground">{sampleExplanation}</p> : <>
         <h2 class="mt-8 text-sm font-bold tracking-tight">Installation methods</h2>
         <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
           Choose APM, Copilot CLI, or VS Code below. Component support and prerequisites
@@ -159,13 +163,14 @@ const facts = [
         <div class="mt-10 border-t border-border pt-8">
           <InstallGuide plugin={plugin.name} />
         </div>
+        </>}
       </div>
 
       <aside class="min-w-0 lg:sticky lg:top-20 lg:self-start">
         <div class="rounded-lg border border-border bg-card p-5">
-          <h2 class="text-[11px] tracking-wide text-muted-foreground uppercase">Install</h2>
+          <h2 class="text-[11px] tracking-wide text-muted-foreground uppercase">{plugin.sample ? sampleLabel : "Install"}</h2>
 
-          <button
+          {plugin.sample ? <p class="mt-3 text-xs leading-relaxed text-muted-foreground">{sampleExplanation}</p> : <button
             type="button"
             data-copy-text={command}
             class="group mt-3 flex w-full items-center gap-2 rounded-md border border-border bg-background px-3 py-2.5 text-left transition-colors hover:bg-accent"
@@ -176,7 +181,7 @@ const facts = [
               class="shrink-0 text-[11px] text-muted-foreground transition-colors group-hover:text-foreground"
               >copy</span
             >
-          </button>
+          </button>}
 
           <div class="mt-2 flex gap-2">
             <a
@@ -202,12 +207,12 @@ const facts = [
           >
           </p>
 
-          <a
+          {!plugin.sample && <a
             href="#install"
             class="mt-1 block text-[11px] text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
           >
             Setup guide for every client →
-          </a>
+          </a>}
 
           <dl class="mt-5 border-t border-border text-xs">
             {

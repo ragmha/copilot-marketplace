@@ -11,11 +11,12 @@ import { loadConfig } from "./lib/config.mjs";
 import {
   buildMarketplace,
   componentIssues,
-  loadExistingMarketplace,
+  installableMarketplace,
   loadPlugins,
   paths,
   readJson,
   repoRoot,
+  sourceIssues,
 } from "./lib/marketplace.mjs";
 
 const rel = (path) => relative(repoRoot, path).replaceAll("\\", "/");
@@ -84,7 +85,7 @@ function main() {
         `✗ ${rel(plugin.manifestPath)} failed schema validation:\n${formatErrors(validatePlugin.errors)}`,
       );
     } else {
-      for (const issue of componentIssues(plugin.manifest)) {
+      for (const issue of [...componentIssues(plugin.manifest), ...sourceIssues(plugin.manifest)]) {
         errors.push(`✗ ${rel(plugin.manifestPath)}: ${issue}`);
       }
     }
@@ -104,24 +105,25 @@ function main() {
     }
   }
 
-  const marketplace = loadExistingMarketplace();
-
-  if (!marketplace) {
-    errors.push(`✗ Missing ${rel(paths.marketplaceFile)}. Run "bun run marketplace".`);
-  } else {
+  const siteCatalog = buildMarketplace(config);
+  for (const [file, expected] of [
+    [paths.marketplaceFile, installableMarketplace(siteCatalog)],
+    [paths.siteCopy, siteCatalog],
+  ]) {
+    if (!existsSync(file)) {
+      errors.push(`✗ Missing ${rel(file)}. Run "bun run marketplace".`);
+      continue;
+    }
+    const marketplace = readJson(file);
     if (!validateMarketplace(marketplace)) {
       errors.push(
-        `✗ ${rel(paths.marketplaceFile)} failed schema validation:\n${formatErrors(validateMarketplace.errors)}`,
+        `✗ ${rel(file)} failed schema validation:\n${formatErrors(validateMarketplace.errors)}`,
       );
     }
 
-    const expected = buildMarketplace(config);
-    if (!isDeepStrictEqual(
-      { name: marketplace.name, owner: marketplace.owner, metadata: marketplace.metadata },
-      { name: expected.name, owner: expected.owner, metadata: expected.metadata },
-    )) {
+    if (!isDeepStrictEqual(marketplace, expected)) {
       errors.push(
-        `✗ Catalog identity differs from marketplace.config.json. Run "bun run marketplace".`,
+        `✗ ${rel(file)} differs from marketplace.config.json or plugin manifests (including sample exclusions). Run "bun run marketplace".`,
       );
     }
 
@@ -129,7 +131,7 @@ function main() {
       Array.isArray(marketplace.plugins) ? marketplace.plugins.map((entry) => entry?.name) : [],
     );
 
-    for (const name of seen.keys()) {
+    for (const name of expected.plugins.map((entry) => entry.name)) {
       if (!entryNames.has(name)) {
         errors.push(`✗ Plugin "${name}" is missing from the catalog. Run "bun run marketplace".`);
       }
