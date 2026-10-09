@@ -106,6 +106,7 @@ accordingly and keep anything sensitive out of plugin descriptions.
   a supply-chain review: check the linked repository, not just the manifest.
 - Review the linked repository and the pinned commit; do not approve a plugin
   based only on the manifest metadata.
+- Confirm `source.sha` identifies the reviewed commit.
 - Check hooks and exactly what they run; review MCP launch commands, especially
   unpinned `npx -y <package>@latest`, `uvx`, shell scripts, and downloaded binaries.
 - Review remote endpoints and the data sent to them, plus telemetry and opt-out

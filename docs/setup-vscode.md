@@ -38,8 +38,10 @@ it gets the same marketplace and plugins:
 {
   "extraKnownMarketplaces": {
     "copilot-marketplace": {
-      "source": "github",
-      "repo": "your-org/copilot-marketplace"
+      "source": {
+        "source": "github",
+        "repo": "your-org/copilot-marketplace"
+      }
     }
   },
   "enabledPlugins": {

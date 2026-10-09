@@ -47,7 +47,7 @@ function validateWorkflowPins() {
       if (!match) continue;
 
       const ref = match[1];
-      if (ref.startsWith("./") || ref.startsWith("../") || ref.startsWith("docker://")) {
+      if (ref.startsWith("./")) {
         continue;
       }
 

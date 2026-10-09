@@ -12,4 +12,4 @@ This policy applies to the marketplace repository itself, its site, workflows, a
 
 ## Supported versions
 
-This repository is a template and is primarily maintained on the default branch. The supported versions for vulnerability fixes are the current default branch and the latest published release. Older forks, branches, or unpublished copies are not individually supported, and there is no guaranteed SLA for disclosure handling.
+This repository is a template and is primarily maintained on the default branch. The supported version is the default branch; if releases are published, only the current release is supported. Older forks, branches, and unpublished copies are not individually supported, and there is no guaranteed SLA for disclosure handling.
