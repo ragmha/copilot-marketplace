@@ -53,6 +53,11 @@ files unchanged. An operating-system write failure is reported as an error;
 the three file writes are not a filesystem transaction. Resolve the reported
 filesystem issue and rerun `bun run marketplace` if catalog writes failed.
 
+If this template keeps a `CODEOWNERS` file for review enforcement, replace the
+default owner/team in `.github/CODEOWNERS` before publishing or rolling it out
+to a wider audience. `bun run setup` does not rewrite CODEOWNERS or guess an
+organization team name.
+
 Any repository whose owner is not the placeholder `your-org` is treated as
 already configured. Further setup calls, even with identical values, require
 `--force`. Review the current config before using it. Version, description,

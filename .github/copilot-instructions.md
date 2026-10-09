@@ -21,6 +21,10 @@ See [AGENTS.md](../AGENTS.md) for the full contributor guide. The essentials:
 `bun install` and `bun add`; never suggest `npm install` or commit a
 `package-lock.json`.
 
+Workflow `uses:` entries in `.github/workflows/*.yml` must be SHA-pinned to the
+current major version; Dependabot updates the inline version comments when it
+bumps those actions.
+
 ```sh
 bun run validate          # schemas + cross-checks
 bun run marketplace:check # catalog is in sync with plugins/
