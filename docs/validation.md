@@ -74,17 +74,26 @@ URLs to HTTPS for safe website links.
 
 ## Rendering security regression
 
-Astro is pinned to `5.18.2` with a committed Bun dependency patch. It removes
-the renderer's URL-specific exception to attribute escaping, matching the
-corrected behavior in
-[Astro's upstream renderer](https://github.com/withastro/astro/blob/astro%407.2.8/packages/astro/src/runtime/server/render/util.ts).
-This keeps the existing Astro 5 integration without a major-version migration.
-It is a targeted backport, not a claim that every upstream advisory is fixed.
+Astro is pinned to stable `7.3.5` with React integration `7.0.0`. Its
+[upstream renderer](https://github.com/withastro/astro/blob/astro%407.3.5/packages/astro/src/runtime/server/render/util.ts)
+escapes URL-like attribute values without the unsafe URL exception. The Astro
+5.18.2 backport and `patchedDependencies` are no longer needed. Named entities
+(`&amp;` and `&quot;`) replace the old numeric entities without changing decoded text.
 
-`bun install --frozen-lockfile` applies the patch through `patchedDependencies`
-in `package.json`; keep the patch, manifest, and lockfile together. When updating
-Astro, verify the replacement release escapes URL-like attribute values before
-removing the patch and exact version pin.
+The migration follows the official [Astro 6](https://docs.astro.build/en/guides/upgrade-to/v6/)
+and [Astro 7](https://docs.astro.build/en/guides/upgrade-to/v7/) guides. Use
+Node.js >=22.12.0 and Bun >=1.4.0. Astro resolves Vite 8 without the old
+direct Vite dependency or overrides. Tailwind's Vite plugin is `4.3.3`, which
+supports Vite 8; TypeScript remains on 5.9.
+
+The site remains explicitly static. `compressHTML: true` retains HTML-aware
+inline spacing instead of Astro 7's new JSX default. Browser regressions cover
+spacing, asset loading, React Flow hydration, themes, filtering, installation,
+and sample visibility at root and Pages subpaths.
+
+`bun install --frozen-lockfile` verifies the committed resolution. Dependency
+advisories still need review against the resolved versions and their actual
+build-time or browser exposure; passing rendering tests is not an all-clear audit.
 
 `bun test tests/security.test.mjs` checks repository URL rejection at every
 boundary and parses the renderer's HTML to verify that quotes and ampersands
@@ -92,3 +101,24 @@ are escaped without adding elements. `bun run test:template` also builds a
 fixture whose description contains an inert injection probe and verifies that
 the actual homepage and detail page preserve the original text at both root
 and Pages hosting paths.
+
+### Dependency advisory snapshot (2026-10-09)
+
+GitHub's global advisory API was queried for all 433 unique package versions in
+the committed lockfile, including optional platform packages, using
+`gh api --method GET advisories -f ecosystem=npm -f affects=<name@version,...>`.
+The result agrees with `bun audit --json`: one remaining applicable advisory,
+[GHSA-ch52-4w7c-c8xp](https://github.com/advisories/GHSA-ch52-4w7c-c8xp)
+(high), affecting `http-cache-semantics` <=4.2.0. GitHub lists no patched release.
+
+The issue requires a shared HTTP cache containing user-specific responses and
+client-controlled `max-stale` directives. Here the package is an Astro
+build-time remote-image dependency; the site has no `astro:assets` remote-image
+pipeline, server adapter, authenticated response cache, or deployed Node server.
+Only static files are deployed, so that vulnerable shared-cache path is not
+exposed by this application. This is an accepted, scoped residual dependency
+risk, not a claim that the package is fixed. Reassess before adding remote image
+processing, on-demand rendering, or a shared cache, and refresh when a fix exists.
+
+Compatible transitive fixes include `fast-uri` 3.1.8, `smol-toml` 1.9.0,
+`source-map-js` 1.2.2, and `undici` 8.11.2. No broad dependency overrides are used.

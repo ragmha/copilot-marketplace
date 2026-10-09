@@ -43,6 +43,9 @@ test("portable format essentials are visible with optional technical details", a
     "mcp.json",
   ]);
   await expect(standard).toContainText("Client-specific capabilities are not portable v1 components.");
+  await expect(standard.locator("p").first()).toContainText(
+    "The vendor-neutral Agent Plugins 1.0.0 standard defines a portable core",
+  );
   await expect(standard.getByRole("link", { name: "Agent Plugins 1.0.0 standard", exact: true })).toHaveAttribute(
     "href", "https://agent-plugins.org/specification",
   );
