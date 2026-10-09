@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/migration-pilot",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "plugin",
     "updated": "2026-08-11",
     "contains": {

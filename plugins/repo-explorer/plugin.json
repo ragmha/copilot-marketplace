@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/repo-explorer",
   "category": "Onboarding",
   "directory": {
+    "sample": true,
     "type": "plugin",
     "featured": true,
     "updated": "2026-08-28",

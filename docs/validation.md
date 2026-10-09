@@ -22,8 +22,17 @@ then applies checks a schema cannot express.
 | Catalog schema            | `.github/plugin/marketplace.json failed schema validation`      |
 | Every plugin is listed    | `Plugin "x" is missing from the catalog`                        |
 | No orphan catalog entries | `Catalog entry "x" has no plugins/x/plugin.json`                |
+| Real remote sources pinned | `Plugin "x" requires a 40-hex source.sha`                     |
+| Both catalogs match manifests | `differs from marketplace.config.json or plugin manifests (including sample exclusions)` |
 
-The last two mean the generated file is stale — run `bun run marketplace`.
+Missing, orphaned, or mismatched entries mean the generated file is stale —
+run `bun run marketplace`.
+
+Every non-sample GitHub or Git URL plugin must set an explicit `source.sha`
+to a reviewed 40-hex commit. Only `directory.sample: true` template placeholders
+are exempt. The installable catalog excludes samples; the site catalog retains
+them. Validation checks both schemas and both expected documents independently,
+including an empty installable catalog when only samples remain.
 
 Plugin repository URLs and catalog string sources must be complete HTTPS URLs
 without embedded credentials, whitespace, or backslashes. A shared parsed-URL
