@@ -51,6 +51,9 @@ bun run build             # astro build
 - Import shared types, labels, and install snippets from
   `src/lib/marketplace.ts` instead of re-declaring them.
 - TypeScript, no `any`. Prefer `type` aliases.
+- A hashed CSP meta tag comes from `security.csp`. Never allow script
+  `'unsafe-inline'` or `'unsafe-eval'`; keep `public/staticwebapp.config.json`
+  in sync with `src/lib/csp.mjs`.
 
 ## Out of scope
 
