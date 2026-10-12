@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/onboarding-buddy",
   "category": "Onboarding",
   "directory": {
+    "sample": true,
     "type": "agent",
     "featured": true,
     "updated": "2026-08-30"

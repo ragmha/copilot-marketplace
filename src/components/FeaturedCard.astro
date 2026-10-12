@@ -6,6 +6,8 @@ import {
   pluginArt,
   pluginHref,
   typeChip,
+  sampleLabel,
+  sampleExplanation,
   type Plugin,
 } from "../lib/marketplace";
 
@@ -28,6 +30,7 @@ const contents = describeContents(plugin.contains);
     >
       {art.monogram}
     </span>
+    {plugin.sample && <span class="absolute top-3 left-3 rounded-full border border-border bg-background/85 px-2.5 py-1 text-[11px] text-foreground">{sampleLabel}</span>}
     <span
       class="absolute top-3 right-3 rounded-full bg-background/85 px-2.5 py-1 text-[11px] text-foreground"
     >
@@ -61,7 +64,7 @@ const contents = describeContents(plugin.contains);
     <div
       class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5 text-xs text-muted-foreground"
     >
-      <button
+      {plugin.sample ? <span title={sampleExplanation}>Not installable</span> : <button
         type="button"
         data-install={installCommand(plugin.name)}
         aria-label={`Copy install command for ${plugin.name}`}
@@ -69,7 +72,7 @@ const contents = describeContents(plugin.contains);
       >
         <span aria-hidden="true">+</span>
         Copy install command
-      </button>
+      </button>}
       <span title={plugin.updated}>{describeUpdated(plugin.updated)}</span>
     </div>
   </div>

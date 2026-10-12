@@ -48,6 +48,11 @@ Before finishing any change: `bun run validate && bun run marketplace:check && b
 - **Never hand-edit `.github/plugin/marketplace.json` or `public/marketplace.json`.**
   They are generated. Edit `plugins/<name>/plugin.json` and run `bun run marketplace`.
 - A plugin's directory name must equal its manifest `name`. Validation enforces it.
+- Real GitHub and Git URL entries must pin `source.sha` to a reviewed 40-hex commit.
+  Bump it only through a reviewed PR; never replace an existing pin automatically.
+- `directory.sample: true` marks template placeholders adopters should delete.
+  Samples remain in `public/marketplace.json` but are excluded from the installable
+  `.github/plugin/marketplace.json`; the site labels them and hides install commands.
 - The schemas use `additionalProperties: false`. Site-only display data goes in
   the `directory` object, which Copilot clients ignore.
 - No secrets in the frontend. This is a static site with no backend.
@@ -64,9 +69,12 @@ or use the `add-a-plugin` skill in `.github/skills/`.
 
 ## Site conventions
 
-- **Astro 5** with **Tailwind v4** via `@tailwindcss/vite`. There is no
+- **Astro 7** with **Tailwind v4** via `@tailwindcss/vite`. There is no
   `tailwind.config.js`; theme tokens are declared in `src/styles/global.css`
   with `@theme inline`.
+- Node.js **22.12.0 or newer** and Bun **1.4.0 or newer** are required.
+  Astro resolves its supported Vite 8; do not restore the old Vite 6 override.
+  Keep `compressHTML: true` to preserve HTML-aware whitespace between inline elements.
 - **shadcn token names** (`--background`, `--foreground`, `--card`, `--muted`,
   `--border`, `--primary`, `--chart-1..5`). Dark mode is a `.dark` class on
   `<html>`, toggled by `ThemeToggle.astro` and pre-applied by an inline script
@@ -106,6 +114,9 @@ or use the `add-a-plugin` skill in `.github/skills/`.
   browser launch via Bun can hang on Windows.
 - Keep Vite caches local to each project's `.astro/` directory. Acceptance
   fixtures link dependencies but must not invalidate the running dev server.
+- Astro's `security.csp` emits a hashed CSP meta tag. Never add script
+  `'unsafe-inline'`/`'unsafe-eval'` or inline event-handler attributes (`onclick=`);
+  keep `public/staticwebapp.config.json` in sync with `src/lib/csp.mjs`.
 
 ## Style
 

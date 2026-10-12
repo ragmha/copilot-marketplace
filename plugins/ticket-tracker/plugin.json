@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/ticket-tracker-mcp",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "mcp-server",
     "updated": "2026-08-14"
   }

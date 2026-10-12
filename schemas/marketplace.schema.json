@@ -34,7 +34,6 @@
     },
     "plugins": {
       "type": "array",
-      "minItems": 1,
       "items": { "$ref": "#/$defs/pluginEntry" }
     }
   },
@@ -60,7 +59,8 @@
           "description": "Where a client fetches the plugin from.",
           "anyOf": [
             { "$ref": "#/$defs/repositoryUrl" },
-            { "type": "object" }
+            { "$ref": "plugin.schema.json#/$defs/githubSource" },
+            { "$ref": "plugin.schema.json#/$defs/urlSource" }
           ]
         },
         "description": { "type": "string", "maxLength": 1024 },
@@ -81,7 +81,7 @@
         "keywords": { "type": "array", "items": { "type": "string" } },
         "category": { "type": "string" },
         "tags": { "type": "array", "items": { "type": "string" } },
-        "directory": { "type": "object" }
+        "directory": { "$ref": "plugin.schema.json#/$defs/directory" }
       }
     }
   }

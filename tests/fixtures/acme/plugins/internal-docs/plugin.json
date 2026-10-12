@@ -6,6 +6,7 @@
   "repository": "https://github.com/acme/internal-docs",
   "category": "Onboarding",
   "directory": {
+    "sample": true,
     "type": "mcp-server",
     "updated": "2026-09-14",
     "contains": { "mcpServers": 1 }

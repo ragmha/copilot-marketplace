@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/internal-docs-mcp",
   "category": "Onboarding",
   "directory": {
+    "sample": true,
     "type": "mcp-server",
     "updated": "2026-08-27"
   }

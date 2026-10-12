@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/changelog-writer",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "skill",
     "updated": "2026-09-02"
   }

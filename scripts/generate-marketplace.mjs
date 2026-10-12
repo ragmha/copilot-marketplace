@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { relative } from "node:path";
 import {
   buildMarketplace,
+  installableMarketplace,
   paths,
   repoRoot,
   serialize,
@@ -17,14 +18,14 @@ const targets = [paths.marketplaceFile, paths.siteCopy];
 
 function main() {
   const marketplace = buildMarketplace();
-  const generated = serialize(marketplace);
+  const documents = [installableMarketplace(marketplace), marketplace];
 
   if (process.argv.includes("--check")) {
     // Compare newline-agnostically so a CRLF checkout is not a false failure.
     const normalize = (text) => text.replaceAll("\r\n", "\n");
     const stale = targets.filter(
-      (target) =>
-        !existsSync(target) || normalize(readFileSync(target, "utf8")) !== normalize(generated),
+      (target, index) =>
+        !existsSync(target) || normalize(readFileSync(target, "utf8")) !== normalize(serialize(documents[index])),
     );
 
     if (stale.length > 0) {
@@ -42,7 +43,7 @@ function main() {
   writeMarketplace(marketplace);
 
   const count = marketplace.plugins.length;
-  console.log(`✓ Wrote ${targets.map(rel).join(" and ")} with ${count} plugin(s).`);
+  console.log(`✓ Wrote ${rel(paths.marketplaceFile)} with ${documents[0].plugins.length} installable plugin(s) and ${rel(paths.siteCopy)} with ${count} site entries.`);
 }
 
 try {

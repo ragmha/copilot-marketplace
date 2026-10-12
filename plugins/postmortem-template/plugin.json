@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/postmortem-template",
   "category": "Operations",
   "directory": {
+    "sample": true,
     "type": "prompt",
     "updated": "2026-08-08"
   }

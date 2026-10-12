@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/secret-guard",
   "category": "Operations",
   "directory": {
+    "sample": true,
     "type": "hook",
     "featured": true,
     "updated": "2026-09-02"

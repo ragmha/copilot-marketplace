@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadConfig, repoRoot, validateConfig } from "../scripts/lib/config.mjs";
 import {
-  buildMarketplace, loadPlugins, pathsFor, serialize, writeMarketplace,
+  buildMarketplace, installableMarketplace, loadPlugins, pathsFor, serialize, writeMarketplace,
 } from "../scripts/lib/marketplace.mjs";
 import { parseSetupArgs, setup } from "../scripts/setup.mjs";
 
@@ -46,7 +46,7 @@ function fixture(config = structuredClone(template)) {
       author: { name: "Plugin maintainer" },
       repository,
       category: "Delivery",
-      directory: { type: "plugin", updated: "2026-09-01" },
+      directory: { type: "plugin", updated: "2026-09-01", sample: name === "release-captain" },
     }));
   }
   writeMarketplace(buildMarketplace(config, root), root);
@@ -127,8 +127,9 @@ describe("validated customer configuration", () => {
     });
     writeMarketplace(catalog, root);
     const [, canonical, publicCopy] = snapshot(root);
-    expect(canonical).toBe(publicCopy);
-    expect(JSON.parse(canonical)).toEqual(catalog);
+    expect(JSON.parse(canonical)).toEqual(installableMarketplace(catalog));
+    expect(JSON.parse(publicCopy)).toEqual(catalog);
+    expect(JSON.parse(canonical).plugins.map((entry) => entry.name)).toEqual(["partner-tools"]);
   });
 
   test.each([
@@ -248,8 +249,8 @@ describe("noninteractive setup", () => {
     expect(removedOwnerEmail).toBe(true);
     expect(loadConfig(root)).toEqual(config);
     const [, canonical, publicCopy] = snapshot(root);
-    expect(canonical).toBe(publicCopy);
-    expect(JSON.parse(canonical)).toEqual(marketplace);
+    expect(JSON.parse(canonical)).toEqual(installableMarketplace(marketplace));
+    expect(JSON.parse(publicCopy)).toEqual(marketplace);
     expect(marketplace.plugins.map((plugin) => plugin.repository)).toEqual([
       "https://github.com/third-party/partner-tools",
       "https://github.com/your-org/release-captain",
@@ -318,7 +319,7 @@ describe("noninteractive setup", () => {
     expect(config.branding.title).toBe("Contoso Marketplace");
     expect(config.name).toBe("acme-tools");
     expect(config.repository).toBe("contoso/tools");
-    expect(snapshot(root)[1]).toBe(snapshot(root)[2]);
+    expect(JSON.parse(snapshot(root)[1])).toEqual(installableMarketplace(JSON.parse(snapshot(root)[2])));
   });
 
   test("keeps reviewed email for the same company but clears it for a different company", () => {

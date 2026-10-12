@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/release-captain",
   "category": "Delivery",
   "directory": {
+    "sample": true,
     "type": "plugin",
     "featured": true,
     "updated": "2026-09-03",

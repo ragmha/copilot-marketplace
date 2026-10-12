@@ -98,7 +98,7 @@ test.each([
   "https://example.test/team/plugin?ref=main&compare=base#readme",
   "https://example.test/@team/plugin",
 ])("valid repository URL stays usable: %s", (repository) => {
-  const candidate = { ...manifest, repository };
+  const candidate = { ...manifest, repository, source: undefined };
   expect(validatePlugin(candidate)).toBe(true);
   const generated = buildEntry({ slug: manifest.name, manifest: candidate });
   expect(validateMarketplace(catalog(generated))).toBe(true);
@@ -141,7 +141,7 @@ test.each(["content", "href", "data-search", "title"])("Astro keeps URL-like %s 
       .transform(new Response(`<div${addAttribute(value, key)}></div>`));
     await response.text();
     // HTMLRewriter returns raw attribute entities; the browser suite checks decoded values.
-    expect(values).toEqual([value.replaceAll("&", "&#38;").replaceAll('"', "&#34;")]);
+    expect(values).toEqual([value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")]);
     expect(unexpectedElements).toEqual([]);
   }
 });

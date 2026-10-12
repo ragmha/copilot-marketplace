@@ -14,7 +14,7 @@ export function pathsFor(rootDir = repoRoot) {
     pluginsDir: join(rootDir, "plugins"),
     // The canonical catalog Copilot clients read from the repository.
     marketplaceFile: join(rootDir, ".github", "plugin", "marketplace.json"),
-    // The same document, served by the site so it also has a public URL.
+    // The site catalog also includes non-installable template samples.
     siteCopy: join(rootDir, "public", "marketplace.json"),
   };
 }
@@ -66,11 +66,25 @@ const ENTRY_FIELDS = [
  */
 export function sourceFor(manifest) {
   const url = parseRepositoryUrl(manifest.repository);
-  if (manifest.source) return { ...manifest.source };
+  if (manifest.source) {
+    if (manifest.source.source === "url") parseRepositoryUrl(manifest.source.url);
+    return { ...manifest.source };
+  }
   const match = url.origin === "https://github.com" && !url.search && !url.hash
     ? /^\/([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+?)(?:\.git)?\/?$/.exec(url.pathname)
     : null;
   return match ? { source: "github", repo: match[1] } : manifest.repository;
+}
+
+export function sourceIssues(manifest) {
+  if (manifest.directory?.sample === true) return [];
+  const source = sourceFor(manifest);
+  if ((typeof source === "string" || source.source === "github" || source.source === "url") &&
+      (typeof source !== "object" || typeof source.sha !== "string" ||
+       !/^[a-fA-F0-9]{40}(?![\s\S])/.test(source.sha))) {
+    return [`Plugin "${manifest.name}" requires a 40-hex source.sha for its remote source; only directory.sample: true entries are exempt.`];
+  }
+  return [];
 }
 
 export function componentIssues(manifest) {
@@ -128,13 +142,19 @@ export function loadExistingMarketplace(rootDir = repoRoot) {
   return existsSync(marketplaceFile) ? readJson(marketplaceFile) : null;
 }
 
-/** Write one prepared catalog identically to both consumers. */
+export function installableMarketplace(marketplace) {
+  return { ...marketplace, plugins: marketplace.plugins.filter((entry) => entry.directory?.sample !== true) };
+}
+
+/** Keep samples on the site, never in the catalog clients install from. */
 export function writeMarketplace(marketplace, rootDir = repoRoot) {
   const { marketplaceFile, siteCopy } = pathsFor(rootDir);
-  const generated = serialize(marketplace);
-  for (const target of [marketplaceFile, siteCopy]) {
+  for (const [target, document] of [
+    [marketplaceFile, installableMarketplace(marketplace)],
+    [siteCopy, marketplace],
+  ]) {
     mkdirSync(dirname(target), { recursive: true });
-    writeFileSync(target, generated);
+    writeFileSync(target, serialize(document));
   }
 }
 

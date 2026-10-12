@@ -9,6 +9,7 @@
   "repository": "https://github.com/your-org/api-contract-check",
   "category": "Code quality",
   "directory": {
+    "sample": true,
     "type": "skill",
     "updated": "2026-08-06"
   }

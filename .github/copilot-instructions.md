@@ -12,8 +12,13 @@ See [AGENTS.md](../AGENTS.md) for the full contributor guide. The essentials:
 - **Never edit the generated files.** Change a manifest, then run
   `bun run marketplace`.
 - Directory name must match the manifest `name`.
+- Real GitHub and Git URL entries require a reviewed 40-hex `source.sha`;
+  bump it only through a reviewed PR, never to a floating branch or tag.
+- `directory.sample: true` marks template placeholders adopters should delete.
+  Keep samples in the site catalog, exclude them from the installable catalog,
+  show a Sample badge, and never offer sample install commands.
 - Schemas in `schemas/` use `additionalProperties: false`; site-only fields
-  (`type`, `featured`, `updated`, `contains`) belong under `directory`.
+  (`type`, `featured`, `updated`, `contains`, `sample`) belong under `directory`.
 
 ## Checks
 
@@ -33,8 +38,10 @@ bun run build             # astro build
 
 ## Site
 
-- Astro 5 + Tailwind v4 (`@tailwindcss/vite`, no config file). Theme tokens are
+- Astro 7 + Tailwind v4 (`@tailwindcss/vite`, no config file). Theme tokens are
   in `src/styles/global.css` under `@theme inline`.
+- Require Node.js >=22.12.0 and Bun >=1.4.0. Let Astro resolve Vite 8 without
+  overrides; `compressHTML: true` retains HTML-aware inline spacing.
 - Use shadcn token classes — `bg-card`, `text-muted-foreground`, `border-border`,
   `bg-primary` — never raw colours like `bg-white` or `text-gray-500`.
 - Dark mode is a `.dark` class on `<html>`; every colour must work in both modes.
@@ -44,6 +51,9 @@ bun run build             # astro build
 - Import shared types, labels, and install snippets from
   `src/lib/marketplace.ts` instead of re-declaring them.
 - TypeScript, no `any`. Prefer `type` aliases.
+- A hashed CSP meta tag comes from `security.csp`. Never allow script
+  `'unsafe-inline'` or `'unsafe-eval'`; keep `public/staticwebapp.config.json`
+  in sync with `src/lib/csp.mjs`.
 
 ## Out of scope
 
