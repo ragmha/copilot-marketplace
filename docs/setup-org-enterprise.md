@@ -32,8 +32,10 @@ Create or open the organisation's **`.github-private`** repository and add
 {
   "extraKnownMarketplaces": {
     "copilot-marketplace": {
-      "source": "github",
-      "repo": "your-org/copilot-marketplace"
+      "source": {
+        "source": "github",
+        "repo": "your-org/copilot-marketplace"
+      }
     }
   },
   "enabledPlugins": {
@@ -68,8 +70,10 @@ For plugins that only make sense in one repository, commit
 {
   "extraKnownMarketplaces": {
     "copilot-marketplace": {
-      "source": "github",
-      "repo": "your-org/copilot-marketplace"
+      "source": {
+        "source": "github",
+        "repo": "your-org/copilot-marketplace"
+      }
     }
   },
   "enabledPlugins": {
@@ -100,3 +104,29 @@ accordingly and keep anything sensitive out of plugin descriptions.
 - Require review from a CODEOWNERS team before merge.
 - Because plugins execute in developers' environments, treat every submission as
   a supply-chain review: check the linked repository, not just the manifest.
+- Review the linked repository and the pinned commit; do not approve a plugin
+  based only on the manifest metadata.
+- Confirm `source.sha` identifies the reviewed commit.
+- Check hooks and exactly what they run; review MCP launch commands, especially
+  unpinned `npx -y <package>@latest`, `uvx`, shell scripts, and downloaded binaries.
+- Review remote endpoints and the data sent to them, plus telemetry and opt-out
+  or consent behavior.
+- Review authentication, permissions, and secret handling before enabling the
+  plugin for a team.
+
+## Recommended repository security settings
+
+For a public template or repository, enable the following before wider adoption:
+
+- Secret scanning and push protection.
+- Dependabot alerts and security updates.
+- Private vulnerability reporting.
+- CodeQL default setup instead of checking in a custom CodeQL workflow.
+- A `master` ruleset or branch protection that requires pull requests and the
+  repository's status checks, and blocks force pushes and branch deletion.
+- CODEOWNERS review where the team has at least two reviewers.
+
+Do not change repository settings in a PR. The coordinator or repository owner
+should enable these controls after the stack is registered. A solo maintainer
+cannot approve their own required-review protection, so the repository should
+start without required approvals or add another reviewer before enforcing them.

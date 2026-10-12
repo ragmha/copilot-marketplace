@@ -39,6 +39,12 @@ Before finishing any change: `bun run validate && bun run marketplace:check && b
 
 ## Hard rules
 
+- Workflow `uses:` entries in `.github/workflows/*.yml` must be SHA-pinned to the
+  current major version; floating major tags are not allowed. Dependabot updates
+  the inline version comments when it bumps those actions.
+- Dependabot manages both GitHub Actions and the Bun npm manifest; use the
+  package-ecosystem name `npm` for this repo's dependency file and `github-actions`
+  for workflow updates.
 - **Never hand-edit `.github/plugin/marketplace.json` or `public/marketplace.json`.**
   They are generated. Edit `plugins/<name>/plugin.json` and run `bun run marketplace`.
 - A plugin's directory name must equal its manifest `name`. Validation enforces it.
