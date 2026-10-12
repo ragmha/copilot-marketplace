@@ -22,7 +22,9 @@
     "test:template:install": "playwright install chromium",
     "validate": "bun scripts/validate.mjs",
     "marketplace": "bun scripts/generate-marketplace.mjs",
-    "marketplace:check": "bun scripts/generate-marketplace.mjs --check"
+    "marketplace:check": "bun scripts/generate-marketplace.mjs --check",
+    "lockfile:normalize": "bun scripts/normalize-lockfile.mjs",
+    "lockfile:check": "bun scripts/normalize-lockfile.mjs --check"
   },
   "dependencies": {
     "@astrojs/react": "7.0.0",
