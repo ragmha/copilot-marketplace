@@ -249,7 +249,8 @@ another provider that would bypass the intended audience restrictions.
 
 Store identity-provider credentials in Azure application settings or approved
 secret references, not the repository or frontend build. Add the reviewed
-provider and authorization configuration in `public/staticwebapp.config.json`;
+provider and authorization configuration to the existing
+`public/staticwebapp.config.json`, keeping its `globalHeaders`;
 Astro copies it to the root of `dist/`, where the prebuilt deployment action
 expects it. This template deliberately supplies no partial authentication
 sample or identity application.
@@ -277,9 +278,8 @@ homepage. On Pages the URL includes the configured base path. Azure's
 [default index-file handling](https://learn.microsoft.com/azure/static-web-apps/configuration#trailing-slash)
 also serves `/plugins/<name>` without a fallback rewrite.
 
-No `public/staticwebapp.config.json` is needed for this default public hosting
-profile. If you add one for the reviewed authentication setup, keep it in
-`public/` so it reaches `dist/`. Do not add `navigationFallback` or a catch-all
+`public/staticwebapp.config.json` only sets security headers (see below); keep
+it in `public/` so it reaches `dist/`. Do not add `navigationFallback` or a catch-all
 rewrite to `/index.html`: that would turn missing plugin pages into the
 homepage instead of preserving the multi-page site's URLs and 404 behavior.
 Azure configuration is not interpreted by GitHub Pages; Pages access controls
@@ -290,3 +290,41 @@ URL and browser refresh, assets, `marketplace.json`, and installation snippets.
 Check a nonexistent plugin URL returns 404, and repeat audience/access checks
 against direct content URLs. Local build success is not evidence that live
 hosting, custom domains, approvals, or authentication have been verified.
+
+## Content Security Policy and security headers
+
+Astro's built-in CSP (`security.csp` in `astro.config.mjs`) adds a
+`<meta http-equiv="content-security-policy">` tag to every page, so the policy
+also applies on GitHub Pages, which cannot set response headers. Astro hashes
+every script and `<style>` it emits, including the theme pre-apply script and
+component scripts. The policy is:
+
+```text
+default-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';
+img-src 'self'; connect-src 'self';
+script-src 'self' 'sha256-…'; style-src-elem 'self' 'sha256-…';
+style-src-attr 'unsafe-inline'
+```
+
+- Scripts never allow `'unsafe-inline'` or `'unsafe-eval'`. Add client code as
+  Astro `<script>` blocks or islands so Astro can hash it.
+- `style-src-attr 'unsafe-inline'` permits only inline `style=""` attributes:
+  the card gradients and React Flow's node positioning need them.
+  `style-src-elem` restricts `<style>` elements to Astro-generated hashes and
+  same-origin stylesheets.
+- `form-action 'self'` covers the header search form. The submission page
+  opens GitHub with a script navigation, not a form post.
+- `img-src 'self'` matches the logo rules: logos must be local files in `public/`.
+- Markdown syntax highlighting is disabled because Shiki's inline styles are
+  incompatible with this CSP.
+
+On Azure Static Web Apps, `public/staticwebapp.config.json` adds
+`globalHeaders`: a header CSP with the non-hash directives plus
+`frame-ancestors 'none'` (ignored in meta tags), `X-Content-Type-Options: nosniff`,
+`Referrer-Policy: strict-origin-when-cross-origin`, and a `Permissions-Policy`
+that disables unused device and payment features. Browsers enforce both
+policies, so the header omits `default-src`, `script-src`, and `style-src`; it
+cannot know the per-page hashes, and the meta policy already restricts them.
+The shared directives live in `src/lib/csp.mjs`; `tests/csp.test.mjs` fails if
+the Azure header drifts from them, and `e2e/csp.spec.ts` fails on any CSP
+violation at both hosting paths.

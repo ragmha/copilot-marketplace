@@ -114,6 +114,9 @@ or use the `add-a-plugin` skill in `.github/skills/`.
   browser launch via Bun can hang on Windows.
 - Keep Vite caches local to each project's `.astro/` directory. Acceptance
   fixtures link dependencies but must not invalidate the running dev server.
+- Astro's `security.csp` emits a hashed CSP meta tag. Never add script
+  `'unsafe-inline'`/`'unsafe-eval'` or inline event-handler attributes (`onclick=`);
+  keep `public/staticwebapp.config.json` in sync with `src/lib/csp.mjs`.
 
 ## Style
 
