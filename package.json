@@ -6,7 +6,8 @@
   "license": "MIT",
   "packageManager": "bun@1.4.0",
   "engines": {
-    "bun": ">=1.4.0"
+    "bun": ">=1.4.0",
+    "node": ">=22.12.0"
   },
   "scripts": {
     "preinstall": "node scripts/only-bun.mjs",
@@ -24,33 +25,23 @@
     "marketplace:check": "bun scripts/generate-marketplace.mjs --check"
   },
   "dependencies": {
-    "@astrojs/react": "^6.0.4",
-    "@tailwindcss/vite": "^4.1.13",
-    "@xyflow/react": "^12.11.5",
-    "astro": "5.18.2",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "tailwindcss": "^4.1.13",
-    "yaml": "^2.9.0"
+    "@astrojs/react": "7.0.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@xyflow/react": "^12.12.0",
+    "astro": "7.3.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "4.3.3",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.10",
     "@playwright/test": "^1.63.0",
-    "@types/node": "^22",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
-    "typescript": "^5.9.2",
-    "vite": "^6.4.3"
-  },
-  "overrides": {
-    "vite": "^6.4.3"
-  },
-  "resolutions": {
-    "vite": "^6.4.3"
-  },
-  "patchedDependencies": {
-    "astro@5.18.2": "patches/astro@5.18.2.patch"
+    "typescript": "^5.9.3"
   }
 }

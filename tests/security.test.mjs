@@ -141,7 +141,7 @@ test.each(["content", "href", "data-search", "title"])("Astro keeps URL-like %s 
       .transform(new Response(`<div${addAttribute(value, key)}></div>`));
     await response.text();
     // HTMLRewriter returns raw attribute entities; the browser suite checks decoded values.
-    expect(values).toEqual([value.replaceAll("&", "&#38;").replaceAll('"', "&#34;")]);
+    expect(values).toEqual([value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")]);
     expect(unexpectedElements).toEqual([]);
   }
 });
